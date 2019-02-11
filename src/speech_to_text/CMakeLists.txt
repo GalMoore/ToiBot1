@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(scripts)
+project(speech_to_text)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -184,6 +184,9 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+# catkin_install_python(PROGRAMS talker.py 
+# 			DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 #############
 ## Testing ##

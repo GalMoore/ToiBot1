@@ -1,14 +1,14 @@
-#include "/home/toilab/toibot_ws/src/toi_bot_vision/include/toi_bot_vision/FaceTracker.h"
+#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/FaceTracker.h"
 
 
 FaceTracker::FaceTracker(){
 
 
-    deserialize("/home/toilab/toibot_ws/src/toi_bot_vision/models/shape_predictor_68_face_landmarks.dat") >> pose_model_;
+    deserialize("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/shape_predictor_68_face_landmarks.dat") >> pose_model_;
     //deserialize("/home/toilab/toibot_ws/src/toi_bot_vision/models/shape_predictor_5_face_landmarks.dat") >> sp;
 
     //face recognition
-    deserialize("/home/toilab/toibot_ws/src/toi_bot_vision/models/dlib_face_recognition_resnet_model_v1.dat") >> net;
+    deserialize("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/dlib_face_recognition_resnet_model_v1.dat") >> net;
 
 
 
@@ -99,7 +99,7 @@ string FaceTracker::recognizeFace(State &state,const Mat& frame){
 
         /// folder is empty
 
-        string path = "/home/toilab/toibot_ws/src/toi_bot_vision/faces";
+        string path = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/faces";
         if( checkIfFolderIsEmpty(path) == true){
 
 
@@ -281,7 +281,7 @@ void FaceTracker::rememberMe(State &state, string name ,const Mat &frame){
 
 
         /// create folder with name
-        string path = "/home/toilab/toibot_ws/src/toi_bot_vision/faces";
+        string path = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/faces";
 
         string pathName = (path) +"/"+name;
 

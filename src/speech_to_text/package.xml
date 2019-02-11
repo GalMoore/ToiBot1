@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>scripts</name>
+  <name>speech_to_text</name>
   <version>0.0.0</version>
   <description>The scripts package</description>
 

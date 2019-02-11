@@ -1,6 +1,6 @@
 
 
-#include "/home/toilab/toibot_ws/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
+#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
 
 PersonManager::PersonManager(){
 
@@ -9,7 +9,7 @@ PersonManager::PersonManager(){
 void PersonManager::getCallback(State &state){
 
     ifstream commandFile;
-    commandFile.open("/home/toilab/toibot_ws/src/toi_bot_vision/command.txt");
+    commandFile.open("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt");
     std::string   line;
 
     while(std::getline(commandFile, line)){

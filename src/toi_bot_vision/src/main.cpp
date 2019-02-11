@@ -1,5 +1,5 @@
 
-#include "/home/toilab/toibot_ws/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
+#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
 #include <ctime>
 
 
@@ -9,20 +9,20 @@ using namespace std;
 
 void initState(){
 
-    string fullPath ="/home/toilab/toibot_ws/src/toi_bot_vision/command.txt";
+    string fullPath ="/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt";
     remove(fullPath.c_str());
 
     //calc the new avg
 
     ofstream myfile;
-    myfile.open ("/home/toilab/toibot_ws/src/toi_bot_vision/command.txt");
+    myfile.open ("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt");
     myfile<<1<<endl;
 
 }
 void getName(string& name){
 
     ifstream nameFile;
-    nameFile.open("/home/toilab/toibot_ws/src/toi_bot_vision/name.txt");
+    nameFile.open("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/name.txt");
     std::string   line;
 
     while(std::getline(nameFile, line)){
@@ -95,9 +95,6 @@ int main()
             initState();
 
          }
-
-
-
 
     }
 

@@ -38,7 +38,7 @@ include_directories(
 catkin_package()
 
 
-include(/home/toilab/toibot_ws/src/toi_bot_vision/dlib/cmake)
+include(/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/dlib/cmake)
 
 
 add_executable(toi_bot_vision_node
