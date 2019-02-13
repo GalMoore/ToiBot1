@@ -201,29 +201,46 @@ def google():
     python_bin = "/home/gal/ToiBotEnv/bin/python"
     # # path to the script that must run under the virtualenv
     script_file = "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/dialogflowAPI.py"
-    # Query Dialogflow, get string and response and write to txct file
+    # Query Dialogflow, get string and response and write to txt file
     p = subprocess.Popen([python_bin, script_file])
     p_status = p.wait()
+    # p.kill()
+
+
+def callback(data):
+
+    if(data.data=="speaking!"):
+        print("he is speaking lets wait for him to finish")
+        rospy.loginfo("he is speaking now")
+
+    else:
+        print("")           
+        print("START SPEAKING")
+        print("")
+        play_wav("start")
+        record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/speech_wavs/filename.wav')
+        print("")
+        print("SENDING WAV TO INTERNETS!")
+        print("")
+        play_wav("end")
+        google()
+        time.sleep(1)
+        print("")
+
 
 if __name__ == '__main__':
 
         # pub = rospy.Publisher('text_response', String, queue_size=10)
         rospy.init_node('speech_to_text_node')
+
+        rospy.Subscriber("robot_finished_speaking", String, callback)
+        rospy.spin()
+
         # rate = rospy.Rate(10) # 10hz
-        while not rospy.is_shutdown():
-            print("")           
-            print("START SPEAKING")
-            print("")
-            play_wav("start")
-            record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/speech_wavs/filename.wav')
-            print("")
-            print("SENDING WAV TO INTERNETS!")
-            print("")
-            play_wav("end")
-            google()
-            print("")
-            # pub.publish("response")
+        # while not rospy.is_shutdown():
 
 
-    #     rospy.loginfo(hello_str)
-    #     rate.sleep()
+
+            # wait to get message from manager (text_to_speech_node) that finished speaking
+
+

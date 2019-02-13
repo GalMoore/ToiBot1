@@ -1,0 +1,5 @@
+<launch>
+
+	<node pkg="motors" type="motors_control.py" name="motors_control_node" />
+
+</launch>

@@ -10,7 +10,7 @@ def get_string_text_results():
     pubR = rospy.Publisher('response_text_topic', String, queue_size=10)
     pubI = rospy.Publisher('intent_text_topic', String, queue_size=10)
 
-    rate = rospy.Rate(1) # 10hz
+    rate = rospy.Rate(1) # hz
     while not rospy.is_shutdown():
         # get string from query.txt 
         pathQuery = "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/text_files/query.txt"
