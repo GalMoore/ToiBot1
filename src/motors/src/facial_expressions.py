@@ -1,8 +1,7 @@
+#!/home/gal/ToiBotEnv/bin/python
 from ohbot import ohbot
 from time import sleep
 
-#  CALL THIS SCRIPT FROM "call_check_motors"
-# test motors script for experiementation only
 
 def testing_move():
 	# # Move all motors

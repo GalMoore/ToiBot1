@@ -13,6 +13,9 @@
 #include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/FaceTracker.h"
 #include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/emotionDetection.h"
 
+#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsg.h"
+
+
 
 using namespace cv;
 using namespace std;

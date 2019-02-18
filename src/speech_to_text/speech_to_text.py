@@ -213,6 +213,7 @@ def callback(data):
         print("he is speaking lets wait for him to finish")
         rospy.loginfo("he is speaking now")
 
+    # if toibot is not speaking, let's continue the dialog loop
     else:
         print("")           
         print("START SPEAKING")
@@ -230,17 +231,7 @@ def callback(data):
 
 if __name__ == '__main__':
 
-        # pub = rospy.Publisher('text_response', String, queue_size=10)
         rospy.init_node('speech_to_text_node')
-
         rospy.Subscriber("robot_finished_speaking", String, callback)
         rospy.spin()
-
-        # rate = rospy.Rate(10) # 10hz
-        # while not rospy.is_shutdown():
-
-
-
-            # wait to get message from manager (text_to_speech_node) that finished speaking
-
 

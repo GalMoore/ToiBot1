@@ -1,13 +1,14 @@
 
-#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
-#include <ctime>
+
+
+#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionRos.h"
 
 
 using namespace dlib;
 using namespace std;
 
 
-void initState(){
+/*void initState(){
 
     string fullPath ="/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt";
     remove(fullPath.c_str());
@@ -36,9 +37,9 @@ void getName(string& name){
 
 
 
-}
+}*/
 
-int main()
+/*int main()
 {
     int count = 0;
     cv::VideoCapture cap(0);
@@ -46,6 +47,9 @@ int main()
     State state = init;
 
     PersonManager personManager_;
+
+
+    
 
     while(true){
 
@@ -100,6 +104,96 @@ int main()
 
 
   return 0;
+}*/
+
+visionRos::visionRos(){
+
+    
+    visionPublisher_ = node_.advertise<toi_bot_vision::visionMsg>(
+            "vision_publisher", 10, true);
+
+    int count = 0;
+    cv::VideoCapture cap(0);
+    cv::Mat frame;
+    State state = init;
+
+
+    while(true){
+
+          /*toi_bot_vision::visionMsg m;    
+
+          bool detectFace = true;
+          int8 deltaX = 10;
+          int8 deltaY = 10;
+          bool canRecognize = true;
+          string name ="yakir";
+          string emotion = "happy";
+          visionPublisher_.publish(m);
+          cout<<" yakir "<<endl;*/
+
+
+
+        count++;
+
+        cap >> frame;
+
+        /// from robot manager
+        //personManager_.getCallback(state);
+
+        if( state == init){
+            state = tracking;
+        }
+
+        if( state == tracking ){
+
+            personManager_.track(state,frame);
+            if( state == recognition){
+
+                cout<<" iniside recognition "<<endl;
+
+                string name = personManager_.recognize(state,frame);
+                cv::putText(frame,name,
+                            cv::Point(frame.rows/2,frame.cols/2),1, 3, cv::Scalar(0,255,0),3,8);
+                imshow("frame",frame);
+                waitKey(1);
+
+            }
+        }
+        if( state == memorization){
+            cout<<" iniside remember me "<<endl;
+            string name;
+            //getName(name);
+            personManager_.rememberMe(state,name, frame);
+            //initState();
+
+
+        }
+
+        if( state == emotionRecognition){
+
+            string emotion = personManager_.detectEmotion(state, frame);
+            cout<<"emotion: "<<emotion<<endl;
+            cv::putText(frame,emotion,
+                        cv::Point(frame.rows/2,frame.cols/2),1, 3, cv::Scalar(0,255,0),3,8);
+            imshow("frame",frame);
+            waitKey(1);
+            //initState();
+
+         }
+
+
+    }
+  
+
+
+
+
+
+
+
 }
+
+
+
 
 

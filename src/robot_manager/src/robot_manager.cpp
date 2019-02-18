@@ -3,7 +3,9 @@
 
 using namespace std;
 
-
+// SubscribeAndPublish object subscribes to topic, check if any new msg is 
+// found on topic and in callback republishes the new found 
+// contents of topic to new topic that holds only the changes on this topic
 class SubscribeAndPublish
 {
 public:
@@ -31,6 +33,7 @@ public:
       // cout<<"they are the same!"<<endl;
         ;
     else
+      // if some new input has arrived publish to topic (this will be said by text to speech)
       output = input;
       pub_.publish(output);
       currentQuery = input.data;

@@ -1,8 +1,22 @@
 #!/home/gal/ToiBotEnv/bin/python
+
+# Loads ohbot python script from here
+# /home/gal/ToiBotEnv/lib/python3.6/site-packages/ohbot/ohbot.py
 from ohbot import ohbot
 from time import sleep
+from gtts import gTTS
+import subprocess
 
 currentR ="hello"
+
+def play_mp3_and_open_mouth():
+	ohbot.reset()
+	# 4 TOPLIP    (5= middle // 9= up)
+	ohbot.move(ohbot.TOPLIP,9,1)
+	# 5 BOTTOMLIP (5 = middle // 9= down)
+	ohbot.move(ohbot.BOTTOMLIP,9,1)
+	subprocess.Popen(['mpg123', '-q', 'gTTS.mp3']).wait()
+	ohbot.reset()
 
 def get_string_and_say_it():
 	pathResponse = "/home/gal/toibot_ws/src/ToiBot1/src/text_to_speech/src/txt_files/response.txt"
@@ -12,14 +26,15 @@ def get_string_and_say_it():
 		if(currentR==dataR):
 			print("they are the same! ")
 		else:
-			print(dataR)
-			ohbot.say(dataR)
+			# print(dataR)
+			tts = gTTS(dataR)
+			tts.save('gTTS.mp3')
+			play_mp3_and_open_mouth()
 
 
-            # rate.sleep()
+			# ohbot.say(dataR)
+
+
 
 if __name__ == '__main__':
-    try:
-        get_string_and_say_it()
-    except rospy.ROSInterruptException:
-        pass
+	get_string_and_say_it()
