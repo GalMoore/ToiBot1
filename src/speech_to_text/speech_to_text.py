@@ -1,40 +1,15 @@
 #!/usr/bin/env python
 # Software License Agreement (BSD License)
-#
-# Copyright (c) 2008, Willow Garage, Inc.
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#
-#  * Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above
-#    copyright notice, this list of conditions and the following
-#    disclaimer in the documentation and/or other materials provided
-#    with the distribution.
-#  * Neither the name of Willow Garage, Inc. nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Revision $Id$
 
-## Simple talker demo that published std_msgs/Strings messages
-## to the 'chatter' topic
+'''
+SPEECH TO TEXT NODE
+This node constantly listens for speech above THRESHOLD
+if found, waits for end of sentence, and send resulting wav file to google to get:
+A query in text
+B intent
+C response
+'''
+
 import subprocess
 import rospy
 from std_msgs.msg import String
@@ -46,49 +21,12 @@ import pyaudio
 import wave
 import time
 
-
-def play_wav(start_or_end):
-    import pyaudio  
-    import wave  
-
-    if(start_or_end=="start"):
-        path="/home/gal/ToiBotEnv/start_talk.wav"
-    else:
-        path="/home/gal/ToiBotEnv/end_talk.wav"
-    #define stream chunk   
-    chunk = 1024  
-
-    #open a wav format music  
-    f = wave.open(path,"rb")  
-    #instantiate PyAudio  
-    p = pyaudio.PyAudio()  
-    #open stream  
-    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
-                    channels = f.getnchannels(),  
-                    rate = f.getframerate(),  
-                    output = True)  
-    #read data  
-    data = f.readframes(chunk)  
-
-    #play stream  
-    while data:  
-        stream.write(data)  
-        data = f.readframes(chunk)  
-
-    #stop stream  
-    stream.stop_stream()  
-    stream.close()  
-
-    #close PyAudio  
-    p.terminate() 
-
-
-# https://stackoverflow.com/questions/892199/detect-record-audio-in-python
-
 THRESHOLD = 500
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 16000
+
+# https://stackoverflow.com/questions/892199/detect-record-audio-in-python
 
 def is_silent(snd_data):
     "Returns 'True' if below the 'silent' threshold"
@@ -179,10 +117,10 @@ def record():
 
     r = normalize(r)
     r = trim(r)
-    r = add_silence(r, 0.5)
+    # r = add_silence(r, 0.1)
     return sample_width, r
 
-# RECORDS TO WHEREVER YOU ARE ei 'filename.wav '
+# RECORDS 'filename.wav '
 def record_to_file(path):
     "Records from the microphone and outputs the resulting data to 'path'"
     sample_width, data = record()
@@ -196,8 +134,8 @@ def record_to_file(path):
     wf.close()
 
 def google():
-    # # path to a python interpreter that runs python script
-    # # under the virtualenv /path/to/virtualenv/
+    ''' PYTHON 3 CODE THAT CONVERTS WAV TO STRING AND QUERIES 
+    DIALOGFLOW FOR INTENT & RESULT WHICH ARE PRINTED INTO TXT FILES in scropt dialogflowAPI'''
     python_bin = "/home/gal/ToiBotEnv/bin/python"
     # # path to the script that must run under the virtualenv
     script_file = "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/dialogflowAPI.py"
@@ -206,32 +144,40 @@ def google():
     p_status = p.wait()
     # p.kill()
 
+def recordSentenceToWav():
+            # print("")           
+            # print("START SPEAKING")
+            # print("")
+            # # play_wav("start")
+            record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/speech_wavs/filename.wav')
+            # print("")
+            # print("SENDING WAV TO INTERNETS!")
+            # print("")
+            # play_wav("end")
 
-def callback(data):
+def send_Wav_to_google_get_response_txt_file_and_publish():
 
-    if(data.data=="speaking!"):
-        print("he is speaking lets wait for him to finish")
-        rospy.loginfo("he is speaking now")
-
-    # if toibot is not speaking, let's continue the dialog loop
-    else:
-        print("")           
-        print("START SPEAKING")
-        print("")
-        play_wav("start")
-        record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/speech_wavs/filename.wav')
-        print("")
-        print("SENDING WAV TO INTERNETS!")
-        print("")
-        play_wav("end")
-        google()
-        time.sleep(1)
-        print("")
-
+            google()
+            print("")
+            # get string from text file and publish it
+            pathResponse = "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/text_files/query.txt"
+            with open(pathResponse, 'r') as myfile:
+                dataR = myfile.read()
+                print dataR
+            pub.publish(dataR)
+            # delete text file (by opening it in write mode)
+            open(pathResponse, 'w').close()
 
 if __name__ == '__main__':
 
         rospy.init_node('speech_to_text_node')
-        rospy.Subscriber("robot_finished_speaking", String, callback)
-        rospy.spin()
+        pub = rospy.Publisher('what_robot_heard_last', String,queue_size=10)
 
+        # record sentences as they are spoken.
+        while(1):
+            recordSentenceToWav()
+            start = time.time()
+            send_Wav_to_google_get_response_txt_file_and_publish()
+            end = time.time()
+            print("took this long to get response from google and publish to topic:")
+            print(end-start)

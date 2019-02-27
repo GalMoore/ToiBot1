@@ -42,7 +42,7 @@ def listener():
     rospy.spin()
 
 if __name__ == '__main__':
-    pub = rospy.Publisher('robot_finished_speaking', String,queue_size=10)
-        # pubQ = rospy.Publisher('query_text_topic', String, queue_size=10)
 
-    listener()
+    # REWRITE HOW TEXT TO SPEECH WORKS
+    # pub = rospy.Publisher('robot_finished_speaking', String,queue_size=10)
+    # listener()

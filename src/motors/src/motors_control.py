@@ -24,7 +24,6 @@ def callback(data):
             # p.kill()
             # currentData = data.data
 
-    
 def motors():
     rospy.init_node('motors_node')
 
@@ -35,8 +34,6 @@ def motors():
     # p1_status = p.wait()
 
     rospy.Subscriber("query_text_topic", String, callback)
-
-
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
