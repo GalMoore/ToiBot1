@@ -1,2 +1,0 @@
-scripts:toi_bot_vision
--DCATKIN_DEVEL_PREFIX=/home/toilab/toibot_ws/devel -DCMAKE_INSTALL_PREFIX=/home/toilab/toibot_ws/install -G Unix Makefiles

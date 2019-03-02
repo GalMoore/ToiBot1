@@ -99,23 +99,50 @@ string EmotionDetection::detectEmotion(const Mat& faceImg){
         p(predicted_label) = 0;
         if( k == 0 ){
             best =  atoi(labels[predicted_label].c_str());;
+            string finalEmotion;
             if(best == 1){
-                return "happy";
+                finalEmotion = "happy";
             }
             if(best == 2){
-                return "neutral";
+                finalEmotion =  "neutral";
             }
             if(best == 3){
-                return "sad";
+                finalEmotion =  "sad";
             }
             if(best == 4){
-                return "surprised";
+                finalEmotion = "surprised";
             }
+
+            /*VisionOutputForManager visionOutput;
+
+
+             visionOutput.detectFace = true;
+             visionOutput.deltaX = 0;
+             visionOutput.deltaY = 0;
+             visionOutput.canRecognize = false;
+             visionOutput.name = "";
+             visionOutput.emotion = finalEmotion;
+
+             return visionOutput;*/
+
+            return finalEmotion;
         }
 
     }
 
-    return "nothing";
+    /*VisionOutputForManager visionOutput;
+
+
+     visionOutput.detectFace = true;
+     visionOutput.deltaX = 0;
+     visionOutput.deltaY = 0;
+     visionOutput.canRecognize = false;
+     visionOutput.name = "";
+     visionOutput.emotion = "unknown";
+
+     return visionOutput;*/
+
+    return "unknown";
 
 
 

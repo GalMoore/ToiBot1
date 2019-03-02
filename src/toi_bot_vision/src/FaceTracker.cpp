@@ -5,7 +5,7 @@ FaceTracker::FaceTracker(){
 
 
     deserialize("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/shape_predictor_68_face_landmarks.dat") >> pose_model_;
-    //deserialize("/home/toilab/toibot_ws/src/toi_bot_vision/models/shape_predictor_5_face_landmarks.dat") >> sp;
+    //deserialize("/home/gal/toibot_ws/src/toi_bot_vision/models/shape_predictor_5_face_landmarks.dat") >> sp;
 
     //face recognition
     deserialize("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/dlib_face_recognition_resnet_model_v1.dat") >> net;
@@ -16,10 +16,8 @@ FaceTracker::FaceTracker(){
 }
 
 
+VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat& frame){
 
-void FaceTracker::trackeOverFaces(State& state,const Mat& frame){
-
-    //cout<<"inisied tracking over face "<<endl;
 
     std::vector<std::vector<cv::Point> > landmarksFaces;
     std::vector<cv::Rect> facesRects;
@@ -36,7 +34,7 @@ void FaceTracker::trackeOverFaces(State& state,const Mat& frame){
         int x = tl.x();
         int y = tl.y();
         cv::Rect cvRect = Rect(x,y,r.width(),r.height());
-        cv::rectangle(tmp,cvRect,cv::Scalar(0,255,0),2,8,0);
+        //cv::rectangle(tmp,cvRect,cv::Scalar(0,255,0),2,8,0);
         facesRects.push_back(cvRect);
         int scale = 1;
         shapes.push_back(pose_model_(cimg, faces[i]));
@@ -57,16 +55,28 @@ void FaceTracker::trackeOverFaces(State& state,const Mat& frame){
 
 
     }
-    imshow("tracker",tmp);
-    waitKey(1);
+
 
     const int close_face_threshold = 7000;
 
+    ///no faces at all
     if(facesRects.size() == 0 ){
 
         canRecognizeAgain_ = true;
         state = tracking;
-        return;
+
+
+
+        VisionOutputForManager visionOutput;
+
+         visionOutput.detectFace = false;
+         visionOutput.deltaX = 0;
+         visionOutput.deltaY = 0;
+         visionOutput.canRecognize = false;
+         visionOutput.name = "";
+         visionOutput.emotion = "";
+
+         return visionOutput;
     }
 
 
@@ -79,21 +89,73 @@ void FaceTracker::trackeOverFaces(State& state,const Mat& frame){
             Rect r = facesRects[i];
             double area = r.area();
             if( r.area() > close_face_threshold ){
+
+                Mat tmp = frame.clone();
+                cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
+                imshow("tracker",tmp);
+                waitKey(1);
+
+
                 state = recognition;
-                return;
+
+                VisionOutputForManager visionOutput;
+
+                 visionOutput.detectFace = true;
+                 visionOutput.deltaX = (frame.cols/2) - ((r.x + r.width)/2);
+                 visionOutput.deltaY = (frame.rows/2) - ( (r.x + r.height)/2);
+                 visionOutput.canRecognize = false;
+                 visionOutput.name = "";
+                 visionOutput.emotion = "";
+
+                 return visionOutput;
+
+            } else{
+                cout<<" face are fare "<<endl;
+            }
+        }
+
+    } else {
+
+        for(int i =0; i < /*facesRects.size()*/1; i++){
+            Rect r = facesRects[i];
+            double area = r.area();
+
+            if( r.area() > close_face_threshold ){
+
+                Mat tmp = frame.clone();
+                cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
+                imshow("tracker",tmp);
+                waitKey(1);
+
+
+
+                VisionOutputForManager visionOutput;
+
+                state = tracking;
+
+
+                 visionOutput.detectFace = true;
+                 visionOutput.deltaX = (frame.cols/2) - ((r.x + r.width)/2);
+                 visionOutput.deltaY = (frame.rows/2) - ( (r.x + r.height)/2);
+                 visionOutput.canRecognize = false;
+                 visionOutput.name = "";
+                 visionOutput.emotion = "";
+
+                 return visionOutput;
 
             }
         }
 
+
+
     }
 
-     state = tracking;
 
 
 
 }
 
-string FaceTracker::recognizeFace(State &state,const Mat& frame){
+VisionOutputForManager FaceTracker::recognizeFace(visionState &state,const Mat& frame){
 
         canRecognizeAgain_ = false;
 
@@ -104,7 +166,17 @@ string FaceTracker::recognizeFace(State &state,const Mat& frame){
 
 
             state = tracking;
-            return "hellow";
+
+            VisionOutputForManager visionOutput;
+
+            visionOutput.detectFace = true;
+            visionOutput.deltaX = 0;
+            visionOutput.deltaY = 0;
+            visionOutput.canRecognize = false;
+            visionOutput.name = "";
+            visionOutput.emotion = "";
+
+            return visionOutput;
         }
 
         ////calc cuurent face
@@ -147,7 +219,17 @@ string FaceTracker::recognizeFace(State &state,const Mat& frame){
         }
 
     state = tracking;
-    return "hello "+bestName;
+
+    VisionOutputForManager visionOutput;
+
+    visionOutput.detectFace = true;
+    visionOutput.deltaX = 0;
+    visionOutput.deltaY = 0;
+    visionOutput.canRecognize = true;
+    visionOutput.name = bestName;
+    visionOutput.emotion = "";
+
+    return visionOutput;
 
 
 
@@ -243,6 +325,11 @@ Mat FaceTracker::getCropFace(const Mat& frame){
                  return croppedImage;
              }
 
+             else {
+                 Mat empty(0,0, CV_8U, cv::Scalar(0));
+                 return empty;
+             }
+
 
         }
     } else {
@@ -257,7 +344,7 @@ Mat FaceTracker::getCropFace(const Mat& frame){
 
 }
 
-void FaceTracker::rememberMe(State &state, string name ,const Mat &frame){
+void FaceTracker::rememberMe(visionState &state, string name ,const Mat &frame){
 
     // detect the face and make crop
     std::vector<cv::Point> landmarks;

@@ -1,19 +1,21 @@
 
 
-
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsg.h"
-
-
 #include <opencv2/opencv.hpp>
 
 
 #include <dlib/opencv.h>
 #include <opencv2/highgui/highgui.hpp>
+
+
 #include <dlib/dnn.h>
 #include <iostream>
 #include <dlib/data_io.h>
 #include <dlib/gui_widgets.h>
 #include <dlib/image_transforms.h>
+
+
+//#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionParams.h"
+
 
 using namespace std;
 using namespace dlib;
@@ -71,7 +73,7 @@ public:
         long num_crops
     );
 
-    string detectEmotion(const Mat &faceImg);
+    /*VisionOutputForManager*/string detectEmotion(const Mat& faceImg);
 
 
 

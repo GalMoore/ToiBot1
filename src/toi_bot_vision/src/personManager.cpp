@@ -6,7 +6,7 @@ PersonManager::PersonManager(){
 
 }
 
-void PersonManager::getCallback(State &state){
+void PersonManager::getCallback(visionState &state){
 
     ifstream commandFile;
     commandFile.open("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt");
@@ -16,7 +16,7 @@ void PersonManager::getCallback(State &state){
         std::stringstream   linestream(line);
 
         int numState = atoi(line.c_str());
-        state = static_cast<State>(numState);
+        state = static_cast<visionState>(numState);
 
     }
     commandFile.close();
@@ -26,35 +26,42 @@ void PersonManager::getCallback(State &state){
 }
 
 
-void PersonManager::track(State &state,const Mat& frame){
+VisionOutputForManager PersonManager::track(visionState &state,const Mat& frame){
 
-    faceTracker_.trackeOverFaces(state,frame);
+    VisionOutputForManager visionOutput = faceTracker_.trackeOverFaces(state,frame);
+
+    return visionOutput;
+
+
 
 }
 
-string PersonManager::recognize(State &state,const Mat &frame){
+VisionOutputForManager PersonManager::recognize(visionState &state,const Mat &frame){
 
-
-    return faceTracker_.recognizeFace(state,frame);
+    VisionOutputForManager visionOutput = faceTracker_.recognizeFace(state,frame);
+    return visionOutput;
 }
 
-void PersonManager::rememberMe(State &state, string name ,const Mat &frame){
+void PersonManager::rememberMe(visionState &state, string name ,const Mat &frame){
 
         faceTracker_.rememberMe(state, name, frame);
 
 }
 
-string PersonManager::detectEmotion(State& state,const Mat& frame){
+VisionOutputForManager PersonManager::detectEmotion(visionState& state,const Mat& frame){
 
     Mat cropFace =  faceTracker_.getCropFace(frame);
 
         if(cropFace.rows > 0 ){
 
-            string emotion = emotionDetector_.detectEmotion(cropFace);
-            return emotion;
+             VisionOutputForManager visionOutputEotion;
+             string name  = emotionDetector_.detectEmotion(cropFace);
+             visionOutputEotion.name = name;
+            return visionOutputEotion;
         }
         else {
-           return "there is no face ";
+           VisionOutputForManager defaultVisionOutput;
+           return defaultVisionOutput;
         }
 
 

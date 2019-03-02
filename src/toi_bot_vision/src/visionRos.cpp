@@ -1,199 +1,140 @@
 
-
-
 #include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionRos.h"
+
 
 
 using namespace dlib;
 using namespace std;
 
 
-/*void initState(){
 
-    string fullPath ="/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt";
-    remove(fullPath.c_str());
 
-    //calc the new avg
+void visionRos::visionCallbackCommand(const toi_bot_vision::visionMsgCommand& msg){
 
-    ofstream myfile;
-    myfile.open ("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/command.txt");
-    myfile<<1<<endl;
+
+
+    state_ = static_cast<visionState>(msg.visionStateCommand);
+
+    name_ =  msg.personName;
+
+    cout<<"get msg "<<state_<<" and name "<<name_<<endl;
+
+
 
 }
-void getName(string& name){
 
-    ifstream nameFile;
-    nameFile.open("/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/name.txt");
-    std::string   line;
+void visionRos::convertVisionStructToMsg(toi_bot_vision::visionMsgOutput& m, VisionOutputForManager visionOutput){
 
-    while(std::getline(nameFile, line)){
-        std::stringstream   linestream(line);
+    m.canRecognize = visionOutput.canRecognize;
+    m.deltaX = visionOutput.deltaX ;
+    m.deltaY = visionOutput.deltaY;
+    m.detectFace = visionOutput.detectFace;
+    m.emotion = visionOutput.emotion;
+    m.name =  visionOutput.name;
 
-        nameFile.close();
-        name = line;
-        return;
+}
 
-    }
+void visionRos::initSystem(){
 
+    if( init_ == false ){
 
+        visionPublisher_ = node_.advertise<toi_bot_vision::visionMsgOutput>(
+                "vision_publisher_output", 1, true);
 
-}*/
+        visonSubCommand_ = node_.subscribe( "vision_publisher_command", 1,  &visionRos::visionCallbackCommand, this);
 
-/*int main()
-{
-    int count = 0;
-    cv::VideoCapture cap(0);
-    cv::Mat frame;
-    State state = init;
-
-    PersonManager personManager_;
-
-
-    
-
-    while(true){
-
-        count++;
-
-        cap >> frame;
-
-        personManager_.getCallback(state);
-
-        if( state == init){
-            state = tracking;
-        }
-
-        if( state == tracking ){
-
-            personManager_.track(state,frame);
-            if( state == recognition){
-
-                cout<<" iniside recognition "<<endl;
-
-                string name = personManager_.recognize(state,frame);
-                cv::putText(frame,name,
-                            cv::Point(frame.rows/2,frame.cols/2),1, 3, cv::Scalar(0,255,0),3,8);
-                imshow("frame",frame);
-                waitKey(1);
-
-            }
-        }
-        if( state == memorization){
-            cout<<" iniside remember me "<<endl;
-            string name;
-            getName(name);
-            personManager_.rememberMe(state,name, frame);
-            initState();
-
-
-        }
-
-        if( state == emotionRecognition){
-
-            string emotion = personManager_.detectEmotion(state, frame);
-            cout<<"emotion: "<<emotion<<endl;
-            cv::putText(frame,emotion,
-                        cv::Point(frame.rows/2,frame.cols/2),1, 3, cv::Scalar(0,255,0),3,8);
-            imshow("frame",frame);
-            waitKey(1);
-            initState();
-
-         }
+        init_ = true;
 
     }
-
-
-  return 0;
-}*/
+}
 
 visionRos::visionRos(){
 
-    
-    visionPublisher_ = node_.advertise<toi_bot_vision::visionMsg>(
-            "vision_publisher", 10, true);
 
-    int count = 0;
-    cv::VideoCapture cap(0);
-    cv::Mat frame;
-    State state = init;
+    initSystem();
 
-
-    while(true){
-
-          /*toi_bot_vision::visionMsg m;    
-
-          bool detectFace = true;
-          int8 deltaX = 10;
-          int8 deltaY = 10;
-          bool canRecognize = true;
-          string name ="yakir";
-          string emotion = "happy";
-          visionPublisher_.publish(m);
-          cout<<" yakir "<<endl;*/
+    while(ros::ok()){
 
 
 
-        count++;
-
+        cv::Mat frame;
         cap >> frame;
 
-        /// from robot manager
-        //personManager_.getCallback(state);
-
-        if( state == init){
-            state = tracking;
+        if( state_ == init){
+            state_ = tracking;
         }
 
-        if( state == tracking ){
+        if( state_ == tracking ){
 
-            personManager_.track(state,frame);
-            if( state == recognition){
+            VisionOutputForManager visionOutput = personManager_.track(state_,frame);
+
+            if( state_ == recognition){
 
                 cout<<" iniside recognition "<<endl;
 
-                string name = personManager_.recognize(state,frame);
-                cv::putText(frame,name,
+                VisionOutputForManager visionOutputRecognize = personManager_.recognize(state_,frame);
+                visionOutput.name = visionOutputRecognize.name;
+
+
+
+                cv::putText(frame,visionOutput.name,
                             cv::Point(frame.rows/2,frame.cols/2),1, 3, cv::Scalar(0,255,0),3,8);
                 imshow("frame",frame);
                 waitKey(1);
 
+                toi_bot_vision::visionMsgOutput m;
+                convertVisionStructToMsg(m,visionOutput);
+                visionPublisher_.publish(m);
+
+
+
+                 state_ = tracking;
+
+            } else {
+
+
+                toi_bot_vision::visionMsgOutput m;
+                convertVisionStructToMsg(m,visionOutput);
+                visionPublisher_.publish(m);
+
+                state_ = tracking;
             }
+
+
+
+
+
         }
-        if( state == memorization){
+        if( state_ == memorization){
             cout<<" iniside remember me "<<endl;
-            string name;
-            //getName(name);
-            personManager_.rememberMe(state,name, frame);
-            //initState();
+
+            personManager_.rememberMe(state_,name_, frame);
+            state_ = tracking;
 
 
         }
 
-        if( state == emotionRecognition){
+        if( state_ == emotionRecognition){
 
-            string emotion = personManager_.detectEmotion(state, frame);
-            cout<<"emotion: "<<emotion<<endl;
-            cv::putText(frame,emotion,
+            VisionOutputForManager visionMsgOutputEmotion = personManager_.detectEmotion(state_, frame);
+
+            cv::putText(frame,visionMsgOutputEmotion.emotion,
                         cv::Point(frame.rows/2,frame.cols/2),1, 3, cv::Scalar(0,255,0),3,8);
             imshow("frame",frame);
             waitKey(1);
-            //initState();
+            state_ = tracking;
+
+            toi_bot_vision::visionMsgOutput m;
+            convertVisionStructToMsg(m,visionMsgOutputEmotion);
+            visionPublisher_.publish(m);
 
          }
 
+         ros::spinOnce();
 
     }
-  
-
-
-
-
 
 
 
 }
-
-
-
-
 

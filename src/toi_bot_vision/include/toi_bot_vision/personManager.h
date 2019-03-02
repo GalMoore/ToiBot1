@@ -11,9 +11,9 @@
 #include <dlib/gui_widgets.h>
 
 #include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/FaceTracker.h"
+
 #include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/emotionDetection.h"
 
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsg.h"
 
 
 
@@ -36,11 +36,11 @@ public:
 
 public:
 
-    void getCallback(State &state);
-    void track(State &state, const Mat &frame);
-    string recognize(State &state,const Mat &frame);
-    void rememberMe(State &state, string name ,const Mat &frame);
-    string detectEmotion(State& state,const Mat& frame);
+    void getCallback(visionState &state);
+    VisionOutputForManager track(visionState &state, const Mat &frame);
+    VisionOutputForManager recognize(visionState &state,const Mat &frame);
+    void rememberMe(visionState &state, string name ,const Mat &frame);
+    VisionOutputForManager detectEmotion(visionState &state, const Mat& frame);
 
 
 

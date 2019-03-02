@@ -1,10 +1,8 @@
 #include <iostream>
 
-
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsg.h"
-
-
 #include <opencv2/opencv.hpp>
+
+
 #include <dlib/opencv.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <dlib/image_processing/frontal_face_detector.h>
@@ -20,11 +18,13 @@
 #include <dlib/svm.h>
 #include <fstream>
 
+#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionParams.h"
+
 using namespace cv;
 using namespace std;
 using namespace dlib;
 
-enum State { init = 1, tracking = 2, recognition = 3 , memorization = 4, emotionRecognition = 5  };
+
 
 
 template <template <int,template<typename>class,int,typename> class block, int N, template<typename>class BN, typename SUBNET>
@@ -73,11 +73,11 @@ public:
 
 public:
 
-    void trackeOverFaces(State &state, const Mat& frame );
+    VisionOutputForManager trackeOverFaces(visionState &state, const Mat& frame );
 
-    string recognizeFace(State &state, const Mat& frame);
+    VisionOutputForManager recognizeFace(visionState &state, const Mat& frame);
 
-    void rememberMe(State &state, string name ,const Mat &frame);
+    void rememberMe(visionState &state, string name ,const Mat &frame);
 
 
     double checkMatch(std::vector<matrix<float,0,1>> faceOrig_descriptors ,

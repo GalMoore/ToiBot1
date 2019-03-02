@@ -35,9 +35,11 @@ include_directories(
 
 )
 
+
 add_message_files(
   FILES
-  visionMsg.msg
+  visionMsgOutput.msg
+  visionMsgCommand.msg
 
 )
 generate_messages(
@@ -47,27 +49,19 @@ generate_messages(
 )
 
 
-
-
-
-
-
-
 catkin_package()
 
 
 include(/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/dlib/cmake)
 
 
-add_executable(toi_bot_vision_node  
+add_executable(toi_bot_vision_node
     src/visionRos.cpp
-    src/vision_node.cpp
-	
+    src/vision_node.cpp	
     src/FaceTracker.cpp
     src/FoldersManagment.cpp
     src/personManager.cpp
     src/emotionDetection.cpp
-   
 		
   )
 
@@ -81,14 +75,6 @@ add_executable(toi_bot_vision_node
     ${OpenCV_LIBRARIES}
     dlib 
   )
-
-
-
-
-
-
-
-
 
 
 
