@@ -21,6 +21,9 @@ import wave
 import time
 from std_msgs.msg import String
 from toi_bot_stt.msg import speechTT
+import os
+
+myHome = os.path.expanduser('~')
 
 
 THRESHOLD = 500
@@ -138,9 +141,9 @@ def record_to_file(path):
 def google():
     ''' PYTHON 3 CODE THAT CONVERTS WAV TO STRING AND QUERIES 
     DIALOGFLOW FOR INTENT & RESULT WHICH ARE PRINTED INTO TXT FILES in scropt dialogflowAPI'''
-    python_bin = "/home/gal/ToiBotEnv/bin/python"
+    python_bin = myHome + "/ToiBotEnv/bin/python"
     # # path to the script that must run under the virtualenv
-    script_file = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/src/dialogflowAPI.py"
+    script_file = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_stt/src/dialogflowAPI.py"
     # Query Dialogflow, get string and response and write to txt file
     p = subprocess.Popen([python_bin, script_file])
     p_status = p.wait()
@@ -151,7 +154,7 @@ def recordSentenceToWav():
             # print("START SPEAKING")
             # print("")
             # # play_wav("start")
-            record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav')
+            record_to_file(myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav')
             # print("")
             # print("SENDING WAV TO INTERNETS!")
             # print("")
@@ -162,18 +165,18 @@ def send_Wav_to_google_get_response_txt_file_and_publish():
             google()
 
             # get string from text file and publish it
-            pathQuery = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/query.txt"
+            pathQuery = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/query.txt"
             with open(pathQuery, 'r') as myfile:
                 dataQ = myfile.read()
             message.query = dataQ
 
-            pathResponse = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/response.txt"
+            pathResponse = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/response.txt"
             with open(pathResponse, 'r') as myfile:
                 dataR = myfile.read()
             message.response = dataR
 
              # ADD INTENT TO MESSAGE
-            pathIntent = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/intent.txt"
+            pathIntent = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/intent.txt"
             with open(pathIntent, 'r') as myfile:
                 dataI = myfile.read()
             message.intent = dataI

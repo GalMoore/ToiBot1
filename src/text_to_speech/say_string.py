@@ -6,8 +6,10 @@ from ohbot import ohbot
 from time import sleep
 from gtts import gTTS
 import subprocess
+import os
 
 currentR ="hello"
+myHome = os.path.expanduser('~')
 
 def play_mp3_and_open_mouth():
 	ohbot.reset()
@@ -19,7 +21,7 @@ def play_mp3_and_open_mouth():
 	ohbot.reset()
 
 def get_string_and_say_it():
-	pathResponse = "/home/gal/toibot_ws/src/ToiBot1/src/text_to_speech/src/txt_files/response.txt"
+	pathResponse = myHome + "/toibot_ws/src/ToiBot1/src/text_to_speech/src/txt_files/response.txt"
 	with open(pathResponse, 'r') as myfile:
 		dataR = myfile.read()
 

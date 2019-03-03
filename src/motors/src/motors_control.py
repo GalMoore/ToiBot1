@@ -5,16 +5,17 @@ import subprocess
 from time import sleep
 import os
 
-
 from motors.msg import motorsCommand
 
+
+myHome = os.path.expanduser('~')
 
 
 def tracking_move(deltaX, deltaY):
 
     delatXstr = str(deltaX)+" "
     delatYstr = str(deltaY)
-    commad = "python3 /home/gal/toibot_ws/src/ToiBot1/src/motors/src/motorsAPI.py "
+    commad = "python3" + myHome + "/toibot_ws/src/ToiBot1/src/motors/src/motorsAPI.py "
     fullCommand =    commad + delatXstr + delatYstr
     #print(fullCommand)
     os.system(fullCommand)

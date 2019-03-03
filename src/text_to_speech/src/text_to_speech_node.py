@@ -2,6 +2,8 @@
 import rospy
 from std_msgs.msg import String
 import subprocess
+import os
+myHome = os.path.expanduser('~')
 
 
 
@@ -9,16 +11,16 @@ def callback(data):
     if(data.data):
         # print("data is " + data)
         # print("data.data is " + data.data)
-        pathResponse = "/home/gal/toibot_ws/src/ToiBot1/src/text_to_speech/src/txt_files/response.txt"
+        pathResponse = myHome + "/toibot_ws/src/ToiBot1/src/text_to_speech/src/txt_files/response.txt"
         # write data.data to txt file
         write_to_file(pathResponse,data.data)
         # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-        python_bin = "/home/gal/ToiBotEnv/bin/python"
+        python_bin = myHome+"/ToiBotEnv/bin/python"
         # publish that robot is speaking now
         pub.publish("speaking!")
 
         # script say_string checks for new text in response.txt. if found it will say it!
-        script_file = "/home/gal/toibot_ws/src/ToiBot1/src/text_to_speech/say_string.py"
+        script_file = myHome+"/toibot_ws/src/ToiBot1/src/text_to_speech/say_string.py"
         p = subprocess.Popen([python_bin, script_file])
         p_status = p.wait()
         # publish that robot has finished speaking
