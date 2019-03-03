@@ -1,60 +1,32 @@
 #!/usr/bin/env python
 # Software License Agreement (BSD License)
 
-## to the 'chatter' topic
+'''
+SPEECH TO TEXT NODE
+This node constantly listens for speech above THRESHOLD
+if found, waits for end of sentence, and send resulting wav file to google to get:
+A query in text
+B intent
+C response
+'''
+
 import subprocess
 import rospy
-from std_msgs.msg import String
-
+import sys
 from sys import byteorder
 from array import array
 from struct import pack
 import pyaudio
 import wave
 import time
+from std_msgs.msg import String
+from toi_bot_stt.msg import speechTT
 
 
 THRESHOLD = 500
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 16000
-
-
-
-def play_wav(start_or_end):
-    import pyaudio  
-    import wave  
-
-    if(start_or_end=="start"):
-        path="/home/gal/ToiBotEnv/start_talk.wav"
-    else:
-        path="/home/gal/ToiBotEnv/end_talk.wav"
-    #define stream chunk   
-    chunk = 1024  
-
-    #open a wav format music  
-    f = wave.open(path,"rb")  
-    #instantiate PyAudio  
-    p = pyaudio.PyAudio()  
-    #open stream  
-    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
-                    channels = f.getnchannels(),  
-                    rate = f.getframerate(),  
-                    output = True)  
-    #read data  
-    data = f.readframes(chunk)  
-
-    #play stream  
-    while data:  
-        stream.write(data)  
-        data = f.readframes(chunk)  
-
-    #stop stream  
-    stream.stop_stream()  
-    stream.close()  
-
-    #close PyAudio  
-    p.terminate() 
 
 # https://stackoverflow.com/questions/892199/detect-record-audio-in-python
 
@@ -147,10 +119,10 @@ def record():
 
     r = normalize(r)
     r = trim(r)
-    r = add_silence(r, 0.5)
+    # r = add_silence(r, 0.1)
     return sample_width, r
 
-# RECORDS TO WHEREVER YOU ARE ei 'filename.wav '
+# RECORDS 'filename.wav '
 def record_to_file(path):
     "Records from the microphone and outputs the resulting data to 'path'"
     sample_width, data = record()
@@ -164,42 +136,66 @@ def record_to_file(path):
     wf.close()
 
 def google():
-    # # path to a python interpreter that runs python script
-    # # under the virtualenv /path/to/virtualenv/
+    ''' PYTHON 3 CODE THAT CONVERTS WAV TO STRING AND QUERIES 
+    DIALOGFLOW FOR INTENT & RESULT WHICH ARE PRINTED INTO TXT FILES in scropt dialogflowAPI'''
     python_bin = "/home/gal/ToiBotEnv/bin/python"
     # # path to the script that must run under the virtualenv
-    script_file = "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/dialogflowAPI.py"
+    script_file = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/src/dialogflowAPI.py"
     # Query Dialogflow, get string and response and write to txt file
     p = subprocess.Popen([python_bin, script_file])
     p_status = p.wait()
     # p.kill()
 
+def recordSentenceToWav():
+            # print("")           
+            # print("START SPEAKING")
+            # print("")
+            # # play_wav("start")
+            record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav')
+            # print("")
+            # print("SENDING WAV TO INTERNETS!")
+            # print("")
+            # play_wav("end")
 
-def callback(data):
+def send_Wav_to_google_get_response_txt_file_and_publish():
 
-    if(data.data=="speaking!"):
-        print("he is speaking lets wait for him to finish")
-        rospy.loginfo("he is speaking now")
+            google()
 
-    # if toibot is not speaking, let's continue the dialog loop
-    else:
-        print("")           
-        print("START SPEAKING")
-        print("")
-        play_wav("start")
-        record_to_file('/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/speech_wavs/filename.wav')
-        print("")
-        print("SENDING WAV TO INTERNETS!")
-        print("")
-        play_wav("end")
-        google()
-        time.sleep(1)
-        print("")
+            # get string from text file and publish it
+            pathQuery = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/query.txt"
+            with open(pathQuery, 'r') as myfile:
+                dataQ = myfile.read()
+            message.query = dataQ
 
+            pathResponse = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/response.txt"
+            with open(pathResponse, 'r') as myfile:
+                dataR = myfile.read()
+            message.response = dataR
+
+             # ADD INTENT TO MESSAGE
+            pathIntent = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/intent.txt"
+            with open(pathIntent, 'r') as myfile:
+                dataI = myfile.read()
+            message.intent = dataI
+
+            pub.publish(message)
+            # delete text files (by opening them in write mode)
+            open(pathQuery, 'w').close()
+            open(pathResponse, 'w').close()
+            open(pathIntent, 'w').close()
 
 if __name__ == '__main__':
 
-        rospy.init_node('speech_to_text_node')
-        rospy.Subscriber("robot_finished_speaking", String, callback)
-        rospy.spin()
+        rospy.init_node('toi_bot_stt_node')
+        # pub = rospy.Publisher('what_robot_heard_last', String,queue_size=10)
+        pub =rospy.Publisher('/stt_topic', speechTT, queue_size=1)
+        message = speechTT()
 
+        # record sentences as they are spoken.
+        while(1):
+            recordSentenceToWav()
+            start = time.time()
+            send_Wav_to_google_get_response_txt_file_and_publish()
+            end = time.time()
+            print("took this long to get response from google and publish to topic:")
+            print(end-start)

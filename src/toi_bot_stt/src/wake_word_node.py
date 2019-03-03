@@ -36,9 +36,9 @@ from sphinxbase.sphinxbase import *
 def wake_word():
     # Create a decoder with certain model
     config = Decoder.default_config()
-    config.set_string('-hmm', "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/model_files_for_wake_word/model/en-us/en-us")
-    config.set_string('-lm', "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/model_files_for_wake_word/6204.lm")
-    config.set_string('-dict', "/home/gal/toibot_ws/src/ToiBot1/src/speech_to_text/model_files_for_wake_word/6204.dic")
+    config.set_string('-hmm', "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/model_files_for_wake_word/model/en-us/en-us")
+    config.set_string('-lm', "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/model_files_for_wake_word/6204.lm")
+    config.set_string('-dict', "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/model_files_for_wake_word/6204.dic")
     decoder = Decoder(config)
 
     p = pyaudio.PyAudio()
