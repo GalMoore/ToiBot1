@@ -1,7 +1,8 @@
 
 string name
 bool detectFace
-int8 deltaX
-int8 deltaY
+int32 deltaX
+int32 deltaY
 bool canRecognize
 string emotion
+int32 faceArea

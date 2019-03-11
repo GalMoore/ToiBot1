@@ -59,7 +59,7 @@ public:
     visionState state_ = init ;
     string name_ = "";
 
-    cv::VideoCapture cap = VideoCapture(0);
+    cv::VideoCapture cap = VideoCapture(1);
 
 
     

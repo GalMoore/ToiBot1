@@ -28,13 +28,22 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
     std::vector<dlib::rectangle> faces = detector_(cimg);
     // Find the pose of each face.
     std::vector<full_object_detection> shapes;
+
+    Rect closestRectCenter;
+    double  minDistRectCenter = 1000000;
     for (unsigned long i = 0; i < faces.size(); ++i){
         dlib:: rectangle r = faces[i];
         dlib::point tl = r.tl_corner();
         int x = tl.x();
         int y = tl.y();
         cv::Rect cvRect = Rect(x,y,r.width(),r.height());
-        //cv::rectangle(tmp,cvRect,cv::Scalar(0,255,0),2,8,0);
+        double distCenter =  sqrt(pow((cvRect.x - frame.cols), 2) +
+                                  pow((cvRect.y - frame.rows), 2));
+        if ( distCenter < minDistRectCenter){
+            minDistRectCenter = distCenter;
+            closestRectCenter = cvRect;
+        }
+
         facesRects.push_back(cvRect);
         int scale = 1;
         shapes.push_back(pose_model_(cimg, faces[i]));
@@ -70,11 +79,12 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
         VisionOutputForManager visionOutput;
 
          visionOutput.detectFace = false;
-         visionOutput.deltaX = 0;
-         visionOutput.deltaY = 0;
+         visionOutput.deltaX = 100000;
+         visionOutput.deltaY = 100000;
          visionOutput.canRecognize = false;
          visionOutput.name = "";
          visionOutput.emotion = "";
+
 
          return visionOutput;
     }
@@ -83,29 +93,41 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
     ///if biggest rect is good publish command (delta x, delta y
     /// else publish "no close-face"
 
-    if( canRecognizeAgain_ == true ){
+    if( /*canRecognizeAgain_ == true */ false){
 
         for(int i =0; i < facesRects.size(); i++){
             Rect r = facesRects[i];
             double area = r.area();
-            if( r.area() > close_face_threshold ){
+            if( /*r.area() > close_face_threshold*/ true ){
 
                 Mat tmp = frame.clone();
                 cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
-                imshow("tracker",tmp);
-                waitKey(1);
-
 
                 state = recognition;
 
                 VisionOutputForManager visionOutput;
 
                  visionOutput.detectFace = true;
-                 visionOutput.deltaX = (frame.cols/2) - ((r.x + r.width)/2);
-                 visionOutput.deltaY = (frame.rows/2) - ( (r.x + r.height)/2);
+
+                 Point faceCenter = Point( (r.x + r.width /2), (r.y + r.height /2) );
+                 Point frameCenter = Point((frame.cols/2), (frame.rows/2));
+
+                 visionOutput.deltaX = frameCenter.x - faceCenter.x;
+                 visionOutput.deltaY = frameCenter.y - faceCenter.y;
+
                  visionOutput.canRecognize = false;
                  visionOutput.name = "";
                  visionOutput.emotion = "";
+
+
+                 circle(tmp, faceCenter,5, Scalar(0,255,0), -1, 8, 0);
+                 circle(tmp, frameCenter,5, Scalar(255,0,0), -1, 8, 0);
+
+                 cv::putText(tmp,to_string(visionOutput.deltaX)+","+to_string(visionOutput.deltaY),
+                             cv::Point(100,100),1, 3, cv::Scalar(0,255,0),3,8);
+
+                 imshow("tracker",tmp);
+                 waitKey(1);
 
                  return visionOutput;
 
@@ -116,34 +138,49 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
 
     } else {
 
-        for(int i =0; i < /*facesRects.size()*/1; i++){
-            Rect r = facesRects[i];
-            double area = r.area();
 
-            if( r.area() > close_face_threshold ){
+        Rect r = closestRectCenter;
+        double area = r.area();
 
-                Mat tmp = frame.clone();
-                cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
-                imshow("tracker",tmp);
-                waitKey(1);
+        if(/* r.area() > close_face_threshold*/ true){
+
+            Mat tmp = frame.clone();
+            cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
 
 
+            VisionOutputForManager visionOutput;
 
-                VisionOutputForManager visionOutput;
-
-                state = tracking;
+            state = tracking;
 
 
-                 visionOutput.detectFace = true;
-                 visionOutput.deltaX = (frame.cols/2) - ((r.x + r.width)/2);
-                 visionOutput.deltaY = (frame.rows/2) - ( (r.x + r.height)/2);
-                 visionOutput.canRecognize = false;
-                 visionOutput.name = "";
-                 visionOutput.emotion = "";
+             visionOutput.detectFace = true;
 
-                 return visionOutput;
+             Point faceCenter = Point( (r.x + r.width /2), (r.y + r.height /2) );
+             Point frameCenter = Point((frame.cols/2), (frame.rows/2));
 
-            }
+             visionOutput.deltaX = frameCenter.x - faceCenter.x;
+
+
+             visionOutput.deltaY = frameCenter.y - faceCenter.y;
+             visionOutput.canRecognize = false;
+             visionOutput.name = "";
+             visionOutput.emotion = "";
+             visionOutput.faceArea = area;
+
+
+             circle(tmp, faceCenter,5, Scalar(0,255,0), -1, 8, 0);
+             circle(tmp, frameCenter,5, Scalar(255,0,0), -1, 8, 0);
+
+             cv::putText(tmp,to_string(visionOutput.deltaX)+","+to_string(visionOutput.deltaY),
+                         cv::Point(100,100),1, 3, cv::Scalar(0,255,0),3,8);
+
+
+
+             imshow("tracker",tmp);
+             waitKey(1);
+
+             return visionOutput;
+
         }
 
 

@@ -1,4 +1,3 @@
-
 #include "/home/gal/toibot_ws/src/ToiBot1/src/robot_manager/include/robot_managerRos.h"
 
 

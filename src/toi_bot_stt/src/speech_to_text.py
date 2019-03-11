@@ -31,6 +31,12 @@ CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 16000
 
+isRobotSpeaking = False
+message = speechTT()
+pub =rospy.Publisher('/stt_topic', speechTT, queue_size=1)
+
+
+
 # https://stackoverflow.com/questions/892199/detect-record-audio-in-python
 
 def is_silent(snd_data):
@@ -187,18 +193,80 @@ def send_Wav_to_google_get_response_txt_file_and_publish():
             open(pathResponse, 'w').close()
             open(pathIntent, 'w').close()
 
-if __name__ == '__main__':
+# def write_to_file(path,text):
+#     # only writes to file if string !empty
+#     if text:
+#         text_file = open(path, "w")
+#         text_file.write(text)
+#         text_file.close()
 
-        rospy.init_node('toi_bot_stt_node')
-        # pub = rospy.Publisher('what_robot_heard_last', String,queue_size=10)
-        pub =rospy.Publisher('/stt_topic', speechTT, queue_size=1)
-        message = speechTT()
+
+# def callback(data):
+    # print("data:data in callback: " + data.data)
+    # global isRobotSpeaking 
+    # if str(data.data) == "speaking":
+    #     isRobotSpeaking = True
+    # else:
+    #    isRobotSpeaking = False 
+
+    # if (isRobotSpeaking == False):
+    #     print("In while loop isRobotSpeaking: " + str(isRobotSpeaking))
+    #     recordSentenceToWav()
+    #     start = time.time()
+    #     send_Wav_to_google_get_response_txt_file_and_publish()
+    #     end = time.time()
+    #     print("took this long to get response from google and publish to topic:")
+    #     print(end-start)        
+    # else:
+    #     #nothing  
+    #     print("nothing")  
+
+    # isRobotSpeaking = data.data
+    # print("isRobotSpeaking in callback: " + isRobotSpeaking)
+
+    # write data.data to text file
+    #path = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/speaking_or_not.txt"
+    #write_to_file(path,data.data)
+
+# def toi_bot_stt():
+
+#         # pub = rospy.Publisher('what_robot_heard_last', String,queue_size=10)
+#         # setup publisher
+#         #  setup subscriber to check first if robot is speaking
+#         # rospy.Subscriber("/is_robot_speaking_topic", String, callback)
+#     rospy.Subscriber("/is_robot_speaking_topic", String, callback)
+#     rospy.spin()
+
+if __name__ == '__main__':
+    rospy.init_node('toi_bot_stt_node')
+    # toi_bot_stt()
+
+
+
+        # while (1):
+
+        #     if isRobotSpeaking == True:
+        #         #print('speaking')
+        #     else :
+        #         #print('not speaking')
+        # rospy.spin()
+
+        
 
         # record sentences as they are spoken.
-        while(1):
-            recordSentenceToWav()
-            start = time.time()
-            send_Wav_to_google_get_response_txt_file_and_publish()
-            end = time.time()
-            print("took this long to get response from google and publish to topic:")
-            print(end-start)
+        # If you get message from manager that robot is speaking close your ears! 
+    while(1):
+        #     # Check if robot is currently speaking:
+        #     pathIsSpeaking = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/speaking_or_not.txt"
+        #     with open(pathIsSpeaking, 'r') as myfile:
+        #         dataR = myfile.read()
+        #     if(dataR==c):
+        #         print("speaking: stop recording ")
+        #     else:
+        #         print("In while loop isRobotSpeaking: " + isRobotSpeaking)
+        recordSentenceToWav()
+        start = time.time()
+        send_Wav_to_google_get_response_txt_file_and_publish()
+        end = time.time()
+        print("took this long to get response from google and publish to topic:")
+        print(end-start)

@@ -5,30 +5,30 @@ import subprocess
 from time import sleep
 import os
 
+
 from motors.msg import motorsCommand
 
 
-myHome = os.path.expanduser('~')
 
+def tracking_move(deltaX, deltaY, faceArea):
 
-def tracking_move(deltaX, deltaY):
+        f= open('/home/gal/toibot_ws/src/ToiBot1/src/motors/headTracking.txt',"w+")
 
-    delatXstr = str(deltaX)+" "
-    delatYstr = str(deltaY)
-    commad = "python3" + myHome + "/toibot_ws/src/ToiBot1/src/motors/src/motorsAPI.py "
-    fullCommand =    commad + delatXstr + delatYstr
-    #print(fullCommand)
-    os.system(fullCommand)
+        f.write(str(deltaX)+'\n')
+        f.write(str(deltaY)+'\n')
+        f.write(str(faceArea))
+        f.close()
 
-#    python_bin = "/home/toilab/ToiBotEnv/bin/python"
+        print(str(deltaX) +','+str(deltaY)+ ', '+ str(faceArea) )
 
-#    script_file = "/home/toilab/toibot_ws/src/ToiBot1/src/motors/src/motorsAPI.py"
+def lips_speak(setnence):
 
-#    p = subprocess.Popen([python_bin, script_file])
-#    p_status = p.wait()
-#    p.kill()
+        f= open('/home/gal/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
 
-#    subprocess.call(args, shell=True)
+        f.write(str(setnence)+'\n')
+
+        f.close()
+
 
 
 
@@ -38,8 +38,11 @@ def callback(data):
 
     deltaX = int(data.deltaX)
     deltaY = int(data.deltaY)
-    tracking_move(deltaX,deltaY)
+    faceArea = int(data.faceArea)
+    setnence = str(data.setnence)
 
+    tracking_move(deltaX,deltaY, faceArea)
+    lips_speak(setnence)
 
     
 def motors():

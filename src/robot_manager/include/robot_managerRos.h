@@ -1,3 +1,7 @@
+
+#include <iostream>
+#include <fstream>
+
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
@@ -5,13 +9,23 @@
 #include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
 #include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgCommand.h"
 
+#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
+
+
 #include "/home/gal/toibot_ws/devel/include/motors/motorsCommand.h"
+
+#include "/home/gal/toibot_ws/devel/include/motors/motorsCommand.h"
+
+
+#include "/home/gal/toibot_ws/devel/include/toi_bot_speakers/speakersCommand.h"
+
+#include "/home/gal/toibot_ws/devel/include/toi_bot_stt/speechTT.h"
+
+
 
 
 
 #include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionParams.h"
-
-
 
 
 
@@ -22,11 +36,12 @@ enum ActionState { Tracking = 1, Tracking_and_Conversation = 2, RememberMe = 3, 
 struct MotorsMsgOutput{
 
 
-
 };
 
 struct SpeakersMsgOutput{
 
+  string response;
+  string query;
 
 
 };
@@ -57,19 +72,22 @@ struct Action{
 
 struct VisionInput{
 
- bool detectFace = false;
- int deltaX = 0;
- int deltaY = 0;
- bool canRecognize = false;
- string name = "";
- string emotion = "";
+     bool detectFace = false;
+     int32_t deltaX = 0;
+     int32_t deltaY = 0;
+     bool canRecognize = false;
+     string name = "";
+     string emotion = "";
+    int32_t faceArea = 0;
 
 
 };
 
 struct VoiceInput{
 
-  string inputText ="";	
+  string query;
+  string response;
+  string intent;	
 
 
 };
@@ -88,16 +106,21 @@ public:
 
     void visionCallback(const toi_bot_vision::visionMsgOutput &msg);
 
-    void voiceCallback(std_msgs::String input);
+    void voiceCallback(const toi_bot_stt::speechTT &msg);
+
+    // void isSpeakingCallback(const std_msgs::String::ConstPtr& msg);
 
     void initSystem();
 
-
     Action takeAction();
 
-    void makeTrackingAction(const Action& Action);
-    void makeRememberMeAction(const Action& Action);
-    void makeEmotionDetectionMeAction(const Action& Action);
+    void makeTrackingAction(const Action& action);
+    
+    void makeTrackingAndConversationAction(const Action& action);
+
+    void makeRememberMeAction(const Action& action);
+    void makeEmotionDetectionMeAction(const Action& action);
+
 
 
 
@@ -109,13 +132,18 @@ public:
 
     ros::Rate loop_rate_ = ros::Rate(10);
 
+    string lastStringQueryPublished_;
 
     ros::Subscriber visonSubInut_;
+    // ros::Subscriber checkIfRobotSpeaking_;
+
     VisionInput visionInput_;
     ros::Publisher visionPublisher_;
 
+    // string isRobotSpeaking_;
 
     ros::Publisher motorsPublisher_;
+    ros::Publisher speakersPublisher_;
 
 
     ros::Subscriber voiceSubInput_;

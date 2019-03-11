@@ -8,30 +8,32 @@ from gtts import gTTS
 import subprocess
 import os
 
-currentR ="hello"
+currentResponse ="hello"
 myHome = os.path.expanduser('~')
 
-def play_mp3_and_open_mouth():
-	ohbot.reset()
-	# 4 TOPLIP    (5= middle // 9= up)
-	ohbot.move(ohbot.TOPLIP,9,1)
-	# 5 BOTTOMLIP (5 = middle // 9= down)
-	ohbot.move(ohbot.BOTTOMLIP,9,1)
+def play_mp3():
+	# ohbot.reset()
+	# # 4 TOPLIP    (5= middle // 9= up)
+	# ohbot.move(ohbot.TOPLIP,9,1)
+	# # 5 BOTTOMLIP (5 = middle // 9= down)
+	# ohbot.move(ohbot.BOTTOMLIP,9,1)
+
+
 	subprocess.Popen(['mpg123', '-q', 'gTTS.mp3']).wait()
-	ohbot.reset()
+	# ohbot.reset()
 
 def get_string_and_say_it():
-	pathResponse = myHome + "/toibot_ws/src/ToiBot1/src/text_to_speech/src/txt_files/response.txt"
+	pathResponse = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_speakers/txt_files/response.txt"
 	with open(pathResponse, 'r') as myfile:
 		dataR = myfile.read()
 
-		if(currentR==dataR):
+		if(currentResponse==dataR):
 			print("they are the same! ")
 		else:
 			# print(dataR)
 			tts = gTTS(dataR)
 			tts.save('gTTS.mp3')
-			play_mp3_and_open_mouth()
+			play_mp3()
 
 
 			# ohbot.say(dataR)

@@ -12,14 +12,14 @@ enum visionState { init = 1, tracking = 2, recognition = 3 , memorization = 4, e
 struct VisionOutputForManager{
 
  bool detectFace = false;
- int deltaX = 0;
- int deltaY = 0;
- bool canRecognize = false;
- string name = "";
- string emotion = "";
+     int32_t deltaX = 0;
+     int32_t deltaY = 0;
+     bool canRecognize = false;
+     string name = "";
+     string emotion = "";
+     int32_t faceArea = 0;
 
 
 };
-
 
 

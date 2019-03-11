@@ -1,49 +1,14 @@
 
 #include "/home/gal/toibot_ws/src/ToiBot1/src/robot_manager/include/robot_managerRos.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 
 using namespace std;
 
 
-/*class SubscribeAndPublish
-{
-public:
-  string currentQuery;
-
-  SubscribeAndPublish()
-  {
-    //Topic you want to publish
-    pub_ = n_.advertise<std_msgs::String>("/published_topic_from_manager", 1);
-    //Topic you want to subscribe
-    sub_ = n_.subscribe("/response_text_topic", 1, &SubscribeAndPublish::callback, this);
-  }
-
-  void callback(std_msgs::String input)
-  { 
-    // Subscribes to last string heard from 
-    // user and publishes that string or a command to topic
-    std_msgs::String output;
-    // cout<<"input.data = " <<input.data<<endl;
-    // cout<<"currentQuery = " << currentQuery<<endl;
-    int resultCompare = currentQuery.compare(input.data);
-    // cout<<"resultCompare = " <<resultCompare<<endl;
-    if(currentQuery.compare(input.data)==0)
-    //     // cout<<"no change in query"<<endl;
-      // cout<<"they are the same!"<<endl;
-        ;
-    else
-      output = input;
-      pub_.publish(output);
-      currentQuery = input.data;
-  }
-
-private:
-  ros::NodeHandle n_; 
-  ros::Publisher pub_;
-  ros::Subscriber sub_;
-
-};//End of class SubscribeAndPublish
-*/
 
 
 void robotManagerRos::visionCallback(const toi_bot_vision::visionMsgOutput& msg){
@@ -55,42 +20,40 @@ void robotManagerRos::visionCallback(const toi_bot_vision::visionMsgOutput& msg)
     visionInput_.canRecognize = msg.canRecognize;
     visionInput_.name = msg.name;
     visionInput_.emotion = msg.emotion;
-
-    /*cout<<visionInput_.detectFace<<endl;
-    cout<<visionInput_.deltaX<<endl;
-    cout<<visionInput_.deltaY<<endl;
-    cout<<visionInput_.canRecognize<<endl;
-    cout<<visionInput_.name<<endl;
-    cout<<visionInput_.emotion<<endl;
-    cout<<"---------------------"<<endl;*/
-
+    visionInput_.faceArea = msg.faceArea;
 
 
 
 }
 
-void robotManagerRos::voiceCallback(std_msgs::String input){
+void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
+
+  voiceInput_.query = msg.query;
+  voiceInput_.response = msg.response;
+  voiceInput_.intent = msg.intent;
 
 
-  string currentQuery;
 
-  std_msgs::String output;
-
-  int resultCompare = currentQuery.compare(input.data);
-
-  if(currentQuery.compare(input.data)==0){
-
-      // cout<<"no change in query"<<endl;
-     // cout<<"they are the same!"<<endl;
-     voiceInput_.inputText ="";
-
-  }
-
-  else{
-
-    voiceInput_.inputText = input.data;
-  }
 }
+
+// void robotManagerRos::isSpeakingCallback(const std_msgs::String::ConstPtr& msg){
+
+//   // isSpeakingCallback subscribes to "/is_robot_speaking_topic" in toi_bot_speakers
+//   // if robot is now speaking variable isRobotSpeaking will turn true.
+
+//   isRobotSpeaking_ = msg->data.c_str();
+
+//   if (isRobotSpeaking_ == "speaking!"){
+//     isRobotSpeaking_ = "true";
+//     cout<<isRobotSpeaking_<<endl;
+//   }
+
+//   else {
+//     isRobotSpeaking_= "false";
+//   }
+  
+// }
+
 
 void robotManagerRos::initSystem(){
 
@@ -98,7 +61,10 @@ void robotManagerRos::initSystem(){
     if(init_ == false){
 
         visonSubInut_ =    node_.subscribe("vision_publisher_output", 1,  &robotManagerRos::visionCallback, this);
-        voiceSubInput_ =    node_.subscribe("query_text_topic", 1, &robotManagerRos::voiceCallback, this);
+
+        voiceSubInput_ =    node_.subscribe("/stt_topic", 1, &robotManagerRos::voiceCallback, this);
+
+        // checkIfRobotSpeaking_ =  node_.subscribe("/is_robot_speaking_topic", 1, &robotManagerRos::isSpeakingCallback, this);        
 
         visionPublisher_ = node_.advertise<toi_bot_vision::visionMsgCommand>(
                     "vision_publisher_command", 1, true);
@@ -108,8 +74,8 @@ void robotManagerRos::initSystem(){
                     "motors_publisher_command", 1, true);
 
         ///speakers
-
-
+        speakersPublisher_ = node_.advertise<toi_bot_speakers::speakersCommand>(
+                    "speakers_publisher_command", 1, true);
 
         init_ = true;
     }
@@ -117,52 +83,56 @@ void robotManagerRos::initSystem(){
 
 Action robotManagerRos::takeAction(){
 
-    cout<<voiceInput_.inputText <<endl;
+     ///create tracking state
 
-   /* if( voiceInput_.inputText == "remember me" ){
-
-        Action action;
-        action.actionState = RememberMe;
-
-        VisionMsgOutput visionMsgOutput;
-        visionMsgOutput.visionStateOutput = memorization;
-        visionMsgOutput.nameToRemember = "yakir ";
-        action.visionMsgOutput = visionMsgOutput;
-
-        return action;
-
-
-    } else {
-
-        Action action;
-        action.actionState = Tracking;
-
-        VisionMsgOutput visionMsgOutput;
-        visionMsgOutput.visionStateOutput = tracking;
-        action.visionMsgOutput = visionMsgOutput;
-
-        return action;
-
-    }*/
-
-
-    Action action;
+    /*Action action;
     action.actionState = Tracking;
 
     VisionMsgOutput visionMsgOutput;
     visionMsgOutput.visionStateOutput = tracking;
     action.visionMsgOutput = visionMsgOutput;
 
+    return action;*/
+
+    ///create conversatiton state
+
+
+    // If the robot is speaking (subcribe to "is_robot_speaking_topic) and string is "speaking!"
+    // do not listen! (tell toi_bot_stt) 
+    // cout<< "variable X is saying don't listen! " << closeYourEarsRobotIsSpeakingNow_ <<endl;
+    // if (isRobotSpeaking_ == "true"){
+    //   cout<<"pausing activity of state machine"<<endl;
+    //   Action action;
+    //   action.actionState = Tracking;
+    //   VisionMsgOutput visionMsgOutput;
+    //   visionMsgOutput.visionStateOutput = tracking;
+    //   action.visionMsgOutput = visionMsgOutput;
+
+    //   return action;
+    //   // return 
+    // }
+
+    // else{
+    Action action;
+    // give it state Tracking and conversation if ... tbc
+    action.actionState = Tracking_and_Conversation;
+
+    // give the visionMsg command "tracking " so it tracks
+    action.visionMsgOutput.visionStateOutput = tracking;
+
+    /// speakers    
+    // give the speakers a response to be said
+    action.speakersMsgOutput.response = voiceInput_.response;
+    action.speakersMsgOutput.query = voiceInput_.query;
+
     return action;
-
-
-
-
 
 
 }
 
-void robotManagerRos::makeTrackingAction(const Action& Action){
+
+void robotManagerRos::makeTrackingAction(const Action& action){
+
 
     ///vision part
     toi_bot_vision::visionMsgCommand visionMsg;
@@ -172,41 +142,82 @@ void robotManagerRos::makeTrackingAction(const Action& Action){
 
     ///motors part
     motors::motorsCommand motorsMsg;
+   
 
-    if(visionInput_.detectFace == true) {
+     motorsMsg.deltaX =  visionInput_.deltaX;
+     motorsMsg.deltaY =  visionInput_.deltaY;
+     motorsMsg.faceArea = visionInput_.faceArea;
 
-       motorsMsg.deltaX =  visionInput_.deltaX;
-       motorsMsg.deltaY =  visionInput_.deltaY;
-       motorsMsg.sentence =" yakir ";
-       cout<<"  motorsMsg.deltaX "<<(int)motorsMsg.deltaX<<endl;
+     // debug only
+     // cout<<(int) motorsMsg.deltaX <<", "<<(int)motorsMsg.deltaY<<", "<<(int)motorsMsg.faceArea<<endl;
 
-       motorsPublisher_.publish(motorsMsg);
+     motorsPublisher_.publish(motorsMsg);
 
-       ros::spinOnce();
-       loop_rate_.sleep();
+     ros::spinOnce();
+     loop_rate_.sleep();
 
-    } else {
-
-        motorsMsg.deltaX =  0;
-        motorsMsg.deltaY =  0;
-        motorsMsg.sentence ="";
-
-        motorsPublisher_.publish(motorsMsg);
-
-        ros::spinOnce();
-        loop_rate_.sleep();
-    }
+    
 
 
 
 }
 
-void robotManagerRos::makeRememberMeAction(const Action& Action){
+void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
+
+  //within the robotmanagerROS while loop, when the actionState points to this 
+  //state, the code below will run in a loop until another state is called.
+
+
+
+    ///vision part
+    toi_bot_vision::visionMsgCommand visionMsg;
+    visionMsg.visionStateCommand = visionState::tracking;
+    visionMsg.personName = "unknown";
+    visionPublisher_.publish(visionMsg);
+
+    ///motors part
+    motors::motorsCommand motorsMsg;  
+
+     motorsMsg.deltaX =  visionInput_.deltaX;
+     motorsMsg.deltaY =  visionInput_.deltaY;
+     motorsMsg.faceArea = visionInput_.faceArea;
+
+    // debug only
+     // cout<<(int) motorsMsg.deltaX <<", "<<(int)motorsMsg.deltaY<<", "<<(int)motorsMsg.faceArea<<endl;
+
+     motorsPublisher_.publish(motorsMsg);
+
+     ///speakers part
+
+     toi_bot_speakers::speakersCommand speakersMsg;
+     speakersMsg.response =   action.speakersMsgOutput.response;
+     //debug only
+     // cout<<"speakersMsg.response: " << speakersMsg.response << endl;
+
+
+     //If the message received from Dialogflow is not empty
+     if( action.speakersMsgOutput.response != ""){
+      // and the query heard from user is new (not same as last query)
+      if( action.speakersMsgOutput.query!= lastStringQueryPublished_){
+        // publish the response from dialogflow to speakers to be spoken! 
+        speakersPublisher_.publish(speakersMsg);
+        lastStringQueryPublished_=action.speakersMsgOutput.query;
+        // cout<<lastStringQueryPublished_<<endl;
+      }
+    }
+
+     ros::spinOnce();
+     loop_rate_.sleep();
+
+
+}
+
+void robotManagerRos::makeRememberMeAction(const Action& action){
 
      ///vision part
     toi_bot_vision::visionMsgCommand m;
     m.visionStateCommand = visionState::memorization;
-    m.personName = Action.visionMsgOutput.nameToRemember;
+    m.personName = action.visionMsgOutput.nameToRemember;
     visionPublisher_.publish(m);
 
     ros::spinOnce();
@@ -214,7 +225,7 @@ void robotManagerRos::makeRememberMeAction(const Action& Action){
 
 }
 
-void robotManagerRos::makeEmotionDetectionMeAction(const Action& Action){
+void robotManagerRos::makeEmotionDetectionMeAction(const Action& action){
 
     ///vision part
     toi_bot_vision::visionMsgCommand m;
@@ -231,6 +242,9 @@ void robotManagerRos::makeEmotionDetectionMeAction(const Action& Action){
 
 robotManagerRos::robotManagerRos(){
 
+  //  loop through the while. Each time query takeAction()
+  // which returns the actionState to be carried out
+
 
   initSystem();
 
@@ -240,6 +254,10 @@ robotManagerRos::robotManagerRos(){
 
       switch (action.actionState) {
 
+        // switch through states (action.actionState)
+        // if state found, run appropriate function and give it 
+        // the object (with it's proerties) as defined above in the takeAction() function. 
+
 
           case Tracking:
 
@@ -247,6 +265,7 @@ robotManagerRos::robotManagerRos(){
              break;
 
           case Tracking_and_Conversation:
+              makeTrackingAndConversationAction(action);
 
              break;
 
