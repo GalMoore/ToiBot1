@@ -44,11 +44,10 @@ frames=[] #starting recording into this array
 has_reached_first_threshold = False
 i = 0
 tic = time.time()
-#recording prerequisites
-stream=audio.open(format=FORMAT,channels=CHANNELS, 
-                  rate=RATE,
-                  input=True,
-                  frames_per_buffer=CHUNK)
+# stream=audio.open(format=FORMAT,channels=CHANNELS,  #recording prerequisites
+#                   rate=RATE,
+#                   input=True,
+#                   frames_per_buffer=CHUNK)
 
 def google():
     ''' PYTHON 3 CODE THAT CONVERTS WAV TO STRING AND QUERIES 
@@ -61,38 +60,50 @@ def google():
     p_status = p.wait()
     # p.kill()
 
-def finished_speaking():
-    print("finished speaking")
+def record_sentence_to_wav():
+    print("started record_sentence_to_wav()")
     #end of recording
     stream.stop_stream()
-    print("stopped stream")
     stream.close()
-    print("closed stream")
-    audio.terminate()
-    print("audio terminated")
+    # audio.terminate() # removing audio.terminate
     #writing to file
     wavfile=wave.open(FILE_NAME,'wb')
-    print("opened wavfile")
     wavfile.setnchannels(CHANNELS)
-    print("set channels")
     wavfile.setsampwidth(audio.get_sample_size(FORMAT))
-    print("setswampwidth")
     wavfile.setframerate(RATE)
-    print("setframerate")
     wavfile.writeframes(b''.join(frames))#append frames recorded to file
-    print("write frames")
     wavfile.close()
-    print("closed wavfile")
+    print("finished creating wav")
     return
 
 def detect_and_record():
 
+    print("here3")
+    # WHEN ENTER FUNCTION RESTART ALL VARS AND DELETE PREVIOUS WAV
     global has_reached_first_threshold
     global i 
     global minimum_tresh_to_trigger_ears
+    global stream
+    global audio 
+    has_reached_first_threshold = False
+    i = 0
+    tic = time.time()
+    audio=pyaudio.PyAudio() #instantiate the pyaudio
+
+    stream=audio.open(format=FORMAT,channels=CHANNELS,  #recording prerequisites
+                  rate=RATE,
+                  input=True,
+                  frames_per_buffer=CHUNK)
+    del frames[:]
+
+    print("4")
 
     while(True):
+        print("len(frames): " + str(len(frames)))
+        print("create data=stream.read")
         data=stream.read(CHUNK)
+        print("created sata=strea.read(CHUNK)")
+
         data_chunk=array('h',data) #data_chunk is an array of 2048 numbers
         vol=max(data_chunk)
 
@@ -107,12 +118,14 @@ def detect_and_record():
             has_reached_first_threshold = True
             frames.append(data) 
 
+        # input sound does not reach thresh but first tresh reached
         if(vol<minimum_tresh_to_trigger_ears and has_reached_first_threshold==True):
             # allows two second beneath threshold
             frames.append(data) 
-            if(i==30):
+            if(i==20):
                 # and then finishes recording
-                finished_speaking()
+                print("sending to record_sentence_to_wav()")
+                record_sentence_to_wav()
                 return
 
         if(vol>minimum_tresh_to_trigger_ears and has_reached_first_threshold==True):
@@ -121,10 +134,6 @@ def detect_and_record():
             i = 0 
 
         i=i+1
-
-def recordSentenceToWav():
-    detect_and_record()
-
 def send_Wav_to_google_get_response_txt_file_and_publish():
 
             google()
@@ -161,30 +170,77 @@ def callback(data):
 
     if str(data.data) == "speaking":
         isRobotSpeaking = True
-        print('speeeeeeking ')
-        print('speeeeeeking ')
-        print('speeeeeeking ')
-        print('speeeeeeking ')
+        print('robot is spoeaking - close your ears! ')
     else:
          isRobotSpeaking = False
-         print('nooooooott   speeeeeeking ')
-         print('nooooooott   speeeeeeking ')
-         print('nooooooott   speeeeeeking ')
+         print('robot is not speaking')
+
 
 
 if __name__ == '__main__':
     rospy.init_node('toi_bot_stt_node')
 
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print("SETTING UP SPEECH TO TEXT CHECK OF MIC INPUT CONFIG")
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
     # while
-    if isRobotSpeaking == True:
-        print('not record')
-    else:
-       recordSentenceToWav()
-       start = time.time()
-       send_Wav_to_google_get_response_txt_file_and_publish()
-       end = time.time()
-       print("took this long to get response from google and publish to topic:")
-       print(end-start)
+    # if isRobotSpeaking == True:
+    #     print('not record')
+    # else:
+    while(True):
+        detect_and_record()
+        start = time.time()
+        send_Wav_to_google_get_response_txt_file_and_publish()
+        # time.sleep()
+        end = time.time()
+        print("took this long to get response from google and publish to topic:")
+        print(end-start)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # recordSentenceToWav()
     # send_Wav_to_google_get_response_txt_file_and_publish()

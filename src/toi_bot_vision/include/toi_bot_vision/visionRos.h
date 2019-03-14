@@ -1,12 +1,12 @@
 
 #include "ros/ros.h"
-#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
+#include "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/personManager.h"
 #include <ctime>
 
 
 
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgCommand.h"
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgCommand.h"
 
 
 using namespace dlib;

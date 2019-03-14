@@ -1,14 +1,14 @@
-#!/home/gal/ToiBotEnv/bin/python
+#!/home/intel/ToiBotEnv/bin/python
 
 # Loads ohbot python script from here
-# /home/gal/ToiBotEnv/lib/python3.6/site-packages/ohbot/ohbot.py
-from ohbot import ohbot
+# /home/intel/ToiBotEnv/lib/python3.6/site-packages/ohbot/ohbot.py
+import ohbot
 from time import sleep
 from gtts import gTTS
 import subprocess
 import os
 
-currentResponse ="hello"
+currentResponse ="init"
 myHome = os.path.expanduser('~')
 
 def play_mp3():
@@ -17,9 +17,7 @@ def play_mp3():
 	# ohbot.move(ohbot.TOPLIP,9,1)
 	# # 5 BOTTOMLIP (5 = middle // 9= down)
 	# ohbot.move(ohbot.BOTTOMLIP,9,1)
-
-
-	subprocess.Popen(['mpg123', '-q', 'gTTS.mp3']).wait()
+	subprocess.Popen(['mpg123', '-q', 'src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3']).wait()
 	# ohbot.reset()
 
 def get_string_and_say_it():
@@ -32,12 +30,8 @@ def get_string_and_say_it():
 		else:
 			# print(dataR)
 			tts = gTTS(dataR)
-			tts.save('gTTS.mp3')
+			tts.save('/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3')
 			play_mp3()
-
-
-			# ohbot.say(dataR)
-
 
 
 if __name__ == '__main__':

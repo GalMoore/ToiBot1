@@ -1,5 +1,5 @@
 
-#include "/home/gal/toibot_ws/src/ToiBot1/src/robot_manager/include/robot_managerRos.h"
+#include "/home/intel/toibot_ws/src/ToiBot1/src/robot_manager/include/robot_managerRos.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -32,7 +32,7 @@ void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
   voiceInput_.response = msg.response;
   voiceInput_.intent = msg.intent;
 
-  cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
+  // cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
 
 
 

@@ -52,7 +52,7 @@ generate_messages(
 catkin_package()
 
 
-include(/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/dlib/cmake)
+include(/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/dlib/cmake)
 
 
 add_executable(toi_bot_vision_node

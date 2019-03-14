@@ -32,7 +32,7 @@ def callback(data):
         # publish that robot has finished speaking
         pub.publish("finished speaking")
 
-        print("playing from speakers_control callback = response is: " + str(data.response))
+        # print("response is: " + str(data.response))
 
 
 

@@ -9,7 +9,7 @@ def speak():
 
     sentence  = ""
 
-    f = open('/home/gal/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt','r')
+    f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt','r')
     out = f.readlines()
     count = 0
     for line in out:
@@ -37,8 +37,6 @@ def speak():
             ohbot.move(5,6,1)
 
             ohbot.wait(0.5)
-
-   
        
 
 

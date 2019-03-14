@@ -1,4 +1,4 @@
-#!/home/gal/ToiBotEnv/bin/python
+#!/home/intel/ToiBotEnv/bin/python
 from sys import byteorder
 from array import array
 from struct import pack
@@ -45,19 +45,19 @@ def detect_intent_audio():
     print('=' * 20)
     # print('Query text: {}'.format(response.query_result.query_text))
 
-    # save string query text to query.txt in /home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files
+    # save string query text to query.txt in /home/intel/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files
     write_to_file(myHome+"/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/query.txt", response.query_result.query_text)
     
     # print('Detected intent: {} (confidence: {})\n'.format(
     #     response.query_result.intent.display_name,
     #     response.query_result.intent_detection_confidence))
 
-    # save string intent to intent.txt in /home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files
+    # save string intent to intent.txt in /home/intel/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files
     write_to_file(myHome+"/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/intent.txt", response.query_result.intent.display_name)
     
     # print('Fulfillment text: {}\n'.format(
     #     response.query_result.fulfillment_text))
-    # save string response.txt in /home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files
+    # save string response.txt in /home/intel/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files
     write_to_file(myHome+"/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/response.txt", response.query_result.fulfillment_text)
 
     # return response

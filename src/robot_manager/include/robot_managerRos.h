@@ -6,26 +6,26 @@
 #include "std_msgs/String.h"
 
 
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgCommand.h"
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgCommand.h"
 
-#include "/home/gal/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
-
-
-#include "/home/gal/toibot_ws/devel/include/motors/motorsCommand.h"
-
-#include "/home/gal/toibot_ws/devel/include/motors/motorsCommand.h"
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
 
 
-#include "/home/gal/toibot_ws/devel/include/toi_bot_speakers/speakersCommand.h"
+#include "/home/intel/toibot_ws/devel/include/motors/motorsCommand.h"
 
-#include "/home/gal/toibot_ws/devel/include/toi_bot_stt/speechTT.h"
+#include "/home/intel/toibot_ws/devel/include/motors/motorsCommand.h"
 
 
+#include "/home/intel/toibot_ws/devel/include/toi_bot_speakers/speakersCommand.h"
+
+#include "/home/intel/toibot_ws/devel/include/toi_bot_stt/speechTT.h"
 
 
 
-#include "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionParams.h"
+
+
+#include "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionParams.h"
 
 
 
