@@ -43,9 +43,6 @@ def write_to_file(path,text):
         text_file.write(text)
         text_file.close()
 
-
-
-
 # def speakers():
 
     # if isSpeakrsWorking == False:
@@ -54,10 +51,17 @@ def write_to_file(path,text):
 
     # rospy.spin()
 
-
 if __name__ == '__main__':
     rospy.init_node('toi_bot_speakers_node')
     pub = rospy.Publisher('is_robot_speaking_topic', String,queue_size=1)
+
+    # init = False
+    # if init == False:
+    #    pathResponse = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_speakers/txt_files/response.txt"
+
+    #    write_to_file(pathResponse,'')
+    #    init = True  
+
     rospy.Subscriber("speakers_publisher_command",speakersCommand, callback)
     # print('bla '+ str(isSpeakrsWorking))
     pub.publish("finished speaking")

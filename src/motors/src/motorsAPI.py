@@ -31,7 +31,7 @@ def head_tracking_move():
     global currentStateX
     global currentStateY
 
-    print('faceArea'+ str(faceArea) )
+    # print('faceArea'+ str(faceArea) )
     if faceArea > 20000:
         threshold = 150
     elif faceArea > 10000:
@@ -43,13 +43,14 @@ def head_tracking_move():
     waiting = 2
 
     if  detlatX == 100000 :
-        print('init ')
+        # print('init ')
         ohbot.move(1,5,1)
         currentStateX = 5
     elif abs(detlatX) < threshold:
-        print('dont move ')
+        pass
+        # print('dont move ')
     elif  detlatX > threshold :
-        print('my right ' +str(currentStateX) )
+        # print('my right ' +str(currentStateX) )
         currentStateX = currentStateX + 1
         ohbot.move(1,currentStateX,1)
     elif detlatX < -threshold:

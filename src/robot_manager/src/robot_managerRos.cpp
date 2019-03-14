@@ -32,27 +32,28 @@ void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
   voiceInput_.response = msg.response;
   voiceInput_.intent = msg.intent;
 
+  cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
+
 
 
 }
 
-// void robotManagerRos::isSpeakingCallback(const std_msgs::String::ConstPtr& msg){
+void robotManagerRos::isSpeakingCallback(const std_msgs::String::ConstPtr& msg){
 
-//   // isSpeakingCallback subscribes to "/is_robot_speaking_topic" in toi_bot_speakers
-//   // if robot is now speaking variable isRobotSpeaking will turn true.
+  // isSpeakingCallback subscribes to "/is_robot_speaking_topic" in toi_bot_speakers
+  // if robot is now speaking variable isRobotSpeaking will turn true.
 
-//   isRobotSpeaking_ = msg->data.c_str();
+  string speaking  = msg->data.c_str();
 
-//   if (isRobotSpeaking_ == "speaking!"){
-//     isRobotSpeaking_ = "true";
-//     cout<<isRobotSpeaking_<<endl;
-//   }
+  if (speaking == "speaking"){
+    isRobotSpeaking_ = true ;
+   }
 
-//   else {
-//     isRobotSpeaking_= "false";
-//   }
+  else {
+    isRobotSpeaking_=  false ;
+  }
   
-// }
+}
 
 
 void robotManagerRos::initSystem(){
@@ -83,36 +84,10 @@ void robotManagerRos::initSystem(){
 
 Action robotManagerRos::takeAction(){
 
-     ///create tracking state
-
-    /*Action action;
-    action.actionState = Tracking;
-
-    VisionMsgOutput visionMsgOutput;
-    visionMsgOutput.visionStateOutput = tracking;
-    action.visionMsgOutput = visionMsgOutput;
-
-    return action;*/
-
-    ///create conversatiton state
+    
 
 
-    // If the robot is speaking (subcribe to "is_robot_speaking_topic) and string is "speaking!"
-    // do not listen! (tell toi_bot_stt) 
-    // cout<< "variable X is saying don't listen! " << closeYourEarsRobotIsSpeakingNow_ <<endl;
-    // if (isRobotSpeaking_ == "true"){
-    //   cout<<"pausing activity of state machine"<<endl;
-    //   Action action;
-    //   action.actionState = Tracking;
-    //   VisionMsgOutput visionMsgOutput;
-    //   visionMsgOutput.visionStateOutput = tracking;
-    //   action.visionMsgOutput = visionMsgOutput;
-
-    //   return action;
-    //   // return 
-    // }
-
-    // else{
+    
     Action action;
     // give it state Tracking and conversation if ... tbc
     action.actionState = Tracking_and_Conversation;
@@ -181,11 +156,15 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
      motorsMsg.deltaX =  visionInput_.deltaX;
      motorsMsg.deltaY =  visionInput_.deltaY;
      motorsMsg.faceArea = visionInput_.faceArea;
+     motorsMsg.faceArea = visionInput_.faceArea;
+     motorsMsg.setnence = "";
+
+
 
     // debug only
      // cout<<(int) motorsMsg.deltaX <<", "<<(int)motorsMsg.deltaY<<", "<<(int)motorsMsg.faceArea<<endl;
 
-     motorsPublisher_.publish(motorsMsg);
+    
 
      ///speakers part
 
@@ -201,10 +180,15 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
       if( action.speakersMsgOutput.query!= lastStringQueryPublished_){
         // publish the response from dialogflow to speakers to be spoken! 
         speakersPublisher_.publish(speakersMsg);
-        lastStringQueryPublished_=action.speakersMsgOutput.query;
+        lastStringQueryPublished_= action.speakersMsgOutput.query;
         // cout<<lastStringQueryPublished_<<endl;
+
+        motorsMsg.setnence = action.speakersMsgOutput.response;
+
       }
     }
+
+     motorsPublisher_.publish(motorsMsg);
 
      ros::spinOnce();
      loop_rate_.sleep();

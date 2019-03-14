@@ -3,8 +3,6 @@ from time import sleep
 import sys
 
 
-currentStateX = 5
-currentStateY = 5
 
 
 def speak():
@@ -22,11 +20,26 @@ def speak():
 
     print(str(sentence))
 
-    words = sentence.split()
-    while i < len(words):
-        ohbot.move(4,7,1) # TOPLIP
-        ohbot.wait(0.5)
-        ohbot.move(4,2,1) # TOPLIP
+    if sentence != '':
+        words = sentence.split()
+
+        print(words)
+
+        wordCount = len(words)
+
+        for x in range(wordCount ):
+            ohbot.move(4,6,1) # TOPLIP
+            ohbot.move(5,6,1)
+            
+            ohbot.wait(0.5)
+           
+            ohbot.move(4,6,1) # TOPLIP
+            ohbot.move(5,6,1)
+
+            ohbot.wait(0.5)
+
+   
+       
 
 
 

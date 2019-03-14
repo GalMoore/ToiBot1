@@ -108,7 +108,7 @@ public:
 
     void voiceCallback(const toi_bot_stt::speechTT &msg);
 
-    // void isSpeakingCallback(const std_msgs::String::ConstPtr& msg);
+    void isSpeakingCallback(const std_msgs::String::ConstPtr& msg);
 
     void initSystem();
 
@@ -140,7 +140,7 @@ public:
     VisionInput visionInput_;
     ros::Publisher visionPublisher_;
 
-    // string isRobotSpeaking_;
+    bool isRobotSpeaking_ = false;
 
     ros::Publisher motorsPublisher_;
     ros::Publisher speakersPublisher_;
