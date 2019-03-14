@@ -12,7 +12,7 @@ def head_tracking_move():
     detlatX = 0
     detlatY = 0
     faceArea = 0
-    f = open('/home/gal/toibot_ws/src/ToiBot1/src/motors/headTracking.txt','r')
+    f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/headTracking.txt','r')
     out = f.readlines()
     count = 0
     for line in out:

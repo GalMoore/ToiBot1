@@ -225,7 +225,7 @@ def send_Wav_to_google_get_response_txt_file_and_publish():
     # print("isRobotSpeaking in callback: " + isRobotSpeaking)
 
     # write data.data to text file
-    #path = "/home/gal/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/speaking_or_not.txt"
+    #path = "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/speaking_or_not.txt"
     #write_to_file(path,data.data)
 
 # def toi_bot_stt():

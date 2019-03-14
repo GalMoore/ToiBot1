@@ -1,7 +1,7 @@
-#!/home/gal/ToiBotEnv/bin/python
+#!/home/intel/ToiBotEnv/bin/python
 
 # Loads ohbot python script from here
-# /home/gal/ToiBotEnv/lib/python3.6/site-packages/ohbot/ohbot.py
+# /home/intel/ToiBotEnv/lib/python3.6/site-packages/ohbot/ohbot.py
 from ohbot import ohbot
 from time import sleep
 from gtts import gTTS

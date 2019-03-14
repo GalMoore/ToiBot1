@@ -12,7 +12,7 @@ from motors.msg import motorsCommand
 
 def tracking_move(deltaX, deltaY, faceArea):
 
-        f= open('/home/gal/toibot_ws/src/ToiBot1/src/motors/headTracking.txt',"w+")
+        f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/headTracking.txt',"w+")
 
         f.write(str(deltaX)+'\n')
         f.write(str(deltaY)+'\n')
@@ -23,7 +23,7 @@ def tracking_move(deltaX, deltaY, faceArea):
 
 def lips_speak(setnence):
 
-        f= open('/home/gal/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
+        f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
 
         f.write(str(setnence)+'\n')
 
