@@ -25,13 +25,14 @@ FORMAT=pyaudio.paInt16
 CHANNELS=1
 RATE=16000 # takes a few hundread samples per second
 CHUNK=1024
-minimum_tresh_to_trigger_ears=500
+minimum_tresh_to_trigger_ears=1900
 FILE_NAME= myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav'
 audio=pyaudio.PyAudio() #instantiate the pyaudio
 frames=[] #starting recording into this array
 has_reached_first_threshold = False
 i = 0
 tic = time.time()
+boolSpeak = False
 
 
 def google():
@@ -140,8 +141,23 @@ def send_Wav_to_google_get_response_txt_file_and_publish():
             open(pathIntent, 'w').close()
 
 
+def callback(data):
+    global boolSpeak
+    if (data.data=="speaking"):
+        boolSpeak = True
+        # print("speaking!!!!")
+    else:
+        # print("not speaking now at all!")
+        boolSpeak = False
+
+
+
+
 if __name__ == '__main__':
     rospy.init_node('toi_bot_stt_node')
+    # pub = rospy.Publisher('is_robot_speaking_topic', String,queue_size=1)
+    rospy.Subscriber('is_robot_speaking_topic', String, callback)
+
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     print("SETTING UP SPEECH TO TEXT CHECK OF MIC INPUT CONFIG")
@@ -149,13 +165,22 @@ if __name__ == '__main__':
 
     while(True):
 
-        detect_and_record()
-        start = time.time()
-        send_Wav_to_google_get_response_txt_file_and_publish()
-        # time.sleep()
-        end = time.time()
-        print("took this long to get response from google and publish to topic:")
-        print(end-start)
-        # print("start 3 second sleep")
-        # time.sleep(3)
-        # print("end 3 second sleep")
+        if(boolSpeak == True):
+            print("I AM SORRY I CAN NOT LISTN NOW")
+            print("I AM SORRY I CAN NOT LISTN NOW")
+            print("I AM SORRY I CAN NOT LISTN NOW")
+
+            pass
+        else:
+            detect_and_record()
+            start = time.time()
+            send_Wav_to_google_get_response_txt_file_and_publish()
+            # time.sleep()
+            end = time.time()
+            print("took this long to get response from google and publish to topic:")
+            print(end-start)
+            # publish that robot is speaking now
+
+            # print("start 9 second sleep")
+            time.sleep(3)
+            # print("end 9 second sleep")

@@ -22,8 +22,6 @@ void robotManagerRos::visionCallback(const toi_bot_vision::visionMsgOutput& msg)
     visionInput_.emotion = msg.emotion;
     visionInput_.faceArea = msg.faceArea;
 
-
-
 }
 
 void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
@@ -35,24 +33,6 @@ void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
   // cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
 
 }
-
-// void robotManagerRos::isSpeakingCallback(const std_msgs::String::ConstPtr& msg){
-
-//   // isSpeakingCallback subscribes to "/is_robot_speaking_topic" in toi_bot_speakers
-//   // if robot is now speaking variable isRobotSpeaking will turn true.
-
-//   string speaking  = msg->data.c_str();
-
-//   if (speaking == "speaking"){
-//     isRobotSpeaking_ = true ;
-//    }
-
-//   else {
-//     isRobotSpeaking_=  false ;
-//   }
-  
-// }
-
 
 void robotManagerRos::initSystem(){
 
@@ -81,9 +61,6 @@ void robotManagerRos::initSystem(){
 }
 
 Action robotManagerRos::takeAction(){
-
-    
-
 
     
     Action action;
@@ -156,13 +133,6 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
      motorsMsg.faceArea = visionInput_.faceArea;
      motorsMsg.faceArea = visionInput_.faceArea;
      motorsMsg.setnence = "";
-
-
-
-    // debug only
-     // cout<<(int) motorsMsg.deltaX <<", "<<(int)motorsMsg.deltaY<<", "<<(int)motorsMsg.faceArea<<endl;
-
-    
 
      ///speakers part
 
@@ -276,126 +246,3 @@ robotManagerRos::robotManagerRos(){
 
 
 }
-
-
-
-
-
-
-
-
-// //  THIS WORKS! 
-// // /**
-// //  * Check incoming topics and decide how to react 
-// //  */
-
-// string currentQuery;
-
-// void publish_to_motors()
-// {
-//   ros::NodeHandle r;
-//   ros::Publisher manager_pub = r.advertise<std_msgs::String>("manager_send_command", 1000);
-//   std_msgs::String msg;
-//   msg.data = "yo here is a command";
-//   manager_pub.publish(msg);
-//   ros::spinOnce();
-//   cout<<"checking"<<endl;
-
-// }
-
-// void queryCallback(const std_msgs::String::ConstPtr& msg)
-// {
-
-//   if(currentQuery.compare(msg->data.c_str())==0)
-//     // cout<<"no change in query"<<endl;
-//     ;
-//   else
-//     // prints new query as arrives 
-//     cout<<msg->data.c_str()<<endl;
-//     publish_to_motors();
-//     currentQuery = msg->data.c_str();
-// }
-
-
-
-// int main(int argc, char **argv)
-// {
-//   ros::init(argc, argv, "robot_manager_node");
-
-//   ros::NodeHandle n;
-
-//   // subscribe to some topic
-//   ros::Subscriber sub = n.subscribe("query_text_topic", 1000, queryCallback);
-//   ros::spin();
-//   return 0;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

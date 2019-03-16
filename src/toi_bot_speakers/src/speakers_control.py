@@ -21,15 +21,15 @@ def callback(data):
 
         # publish that robot is speaking now
         pub.publish("speaking")
-        global isSpeakrsWorking
-        isSpeakrsWorking = True
+        # global isSpeakrsWorking
+        # isSpeakrsWorking = True
         # script say_string checks for new text in response.txt. if found it will say it!
         script_file = myHome+"/toibot_ws/src/ToiBot1/src/toi_bot_speakers/src/say_string.py"
         p = subprocess.Popen([python_bin, script_file])
         p_status = p.wait()
 
         # publish that robot has finished speaking
-        # pub.publish("finished speaking")
+        pub.publish("finished speaking")
         # print("response is: " + str(data.response))
 
 def write_to_file(path,text):

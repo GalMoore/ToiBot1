@@ -5,36 +5,24 @@ import subprocess
 from time import sleep
 import os
 
-
 from motors.msg import motorsCommand
-
-
-
 
 def tracking_move(deltaX, deltaY, faceArea):
 
         f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/headTracking.txt',"w+")
-
         f.write(str(deltaX)+'\n')
         f.write(str(deltaY)+'\n')
         f.write(str(faceArea))
         f.close()
-
         #print(str(deltaX) +','+str(deltaY)+ ', '+ str(faceArea) )
 
 def lips_speak(setnence):
 
         f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
 
-        
-
-
         f.write(str(setnence)+'\n')
 
         f.close()
-
-
-
 
 def callback(data):
 
@@ -47,38 +35,17 @@ def callback(data):
 
 
     f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
-
-        
-
-
     f.write('')
-
     f.close()
-
-   
-
-        
-
-
     tracking_move(deltaX,deltaY, faceArea)
 
     if setnence != '':
         lips_speak(setnence)
         # print('setnence ' + setnence)
 
-
-
-
-
-
-
-
-
-    
 def motors():
 
     rospy.Subscriber("motors_publisher_command",motorsCommand, callback)
-
     rospy.spin()
 
 
