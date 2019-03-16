@@ -1,15 +1,6 @@
 #!/usr/bin/env python
 # Software License Agreement (BSD License)
 
-'''
-SPEECH TO TEXT NODE
-This node constantly listens for speech above THRESHOLD
-if found, waits for end of sentence, and send resulting wav file to google to get:
-A query in text
-B intent
-C response
-'''
-
 import subprocess
 import rospy
 import sys
@@ -28,26 +19,20 @@ from array import array
 import time
 
 myHome = os.path.expanduser('~')
-
-# RATE = 16000
-# isRobotSpeaking = False
 message = speechTT()
 pub =rospy.Publisher('/stt_topic', speechTT, queue_size=1)
 FORMAT=pyaudio.paInt16
 CHANNELS=1
 RATE=16000 # takes a few hundread samples per second
 CHUNK=1024
-minimum_tresh_to_trigger_ears=100
+minimum_tresh_to_trigger_ears=500
 FILE_NAME= myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav'
 audio=pyaudio.PyAudio() #instantiate the pyaudio
 frames=[] #starting recording into this array
 has_reached_first_threshold = False
 i = 0
 tic = time.time()
-# stream=audio.open(format=FORMAT,channels=CHANNELS,  #recording prerequisites
-#                   rate=RATE,
-#                   input=True,
-#                   frames_per_buffer=CHUNK)
+
 
 def google():
     ''' PYTHON 3 CODE THAT CONVERTS WAV TO STRING AND QUERIES 
@@ -65,7 +50,6 @@ def record_sentence_to_wav():
     #end of recording
     stream.stop_stream()
     stream.close()
-    # audio.terminate() # removing audio.terminate
     #writing to file
     wavfile=wave.open(FILE_NAME,'wb')
     wavfile.setnchannels(CHANNELS)
@@ -78,7 +62,7 @@ def record_sentence_to_wav():
 
 def detect_and_record():
 
-    # WHEN ENTER FUNCTION RESTART ALL VARS AND DELETE PREVIOUS WAV
+    # WHEN ENTER FUNCTION RESTART ALL VARS 
     global has_reached_first_threshold
     global i 
     global minimum_tresh_to_trigger_ears
@@ -88,19 +72,16 @@ def detect_and_record():
     i = 0
     tic = time.time()
     audio=pyaudio.PyAudio() #instantiate the pyaudio
-
     stream=audio.open(format=FORMAT,channels=CHANNELS,  #recording prerequisites
                   rate=RATE,
                   input=True,
                   frames_per_buffer=CHUNK)
+    # AND DELETE PREVIOUS WAV FROM ARRAY OF SOUND DATA
     del frames[:]
 
     while(True):
         print("len(frames): " + str(len(frames)))
-        # print("create data=stream.read")
         data=stream.read(CHUNK)
-        # print("created sata=strea.read(CHUNK)")
-
         data_chunk=array('h',data) #data_chunk is an array of 2048 numbers
         vol=max(data_chunk)
 
@@ -109,20 +90,18 @@ def detect_and_record():
             # print("not recording yet - less than vol minimum_tresh_to_trigger_ears!")
             pass
         
-        # reached threshold first time
+        # reached threshold for the first time
         if(vol>minimum_tresh_to_trigger_ears and has_reached_first_threshold==False):
             print("something said - past first thresh - started recording")
-            # set boolean to True for i=84 counts
             has_reached_first_threshold = True
             frames.append(data) 
 
         # input sound does not reach thresh but first tresh reached
         if(vol<minimum_tresh_to_trigger_ears and has_reached_first_threshold==True):
-            # allows two second beneath threshold
+            # allows some extra time so not to cut you off mid sentence
             frames.append(data) 
             if(i==20):
                 # and then finishes recording
-                # print("sending to record_sentence_to_wav()")
                 record_sentence_to_wav()
                 return
 
@@ -148,53 +127,28 @@ def send_Wav_to_google_get_response_txt_file_and_publish():
                 dataR = myfile.read()
             message.response = dataR
 
-             # ADD INTENT TO MESSAGE
             pathIntent = myHome + "/toibot_ws/src/ToiBot1/src/toi_bot_stt/text_files/intent.txt"
             with open(pathIntent, 'r') as myfile:
                 dataI = myfile.read()
             message.intent = dataI
 
             pub.publish(message)
-            # delete text files (by opening them in write mode)
+
+            # after publishing messages delete text files (by opening them in write mode)
             open(pathQuery, 'w').close()
             open(pathResponse, 'w').close()
             open(pathIntent, 'w').close()
 
 
-# isRobotSpeaking 
-
-# def callback(data):
-
-#     global isRobotSpeaking
-
-#     if str(data.data) == "speaking":
-#         isRobotSpeaking = True
-#         print('robot is spoeaking - close your ears! ')
-#     else:
-#          isRobotSpeaking = False
-#          print('robot is not speaking')
-
-
-
 if __name__ == '__main__':
     rospy.init_node('toi_bot_stt_node')
-    # rospy.Subscriber("/is_robot_speaking_topic", String, callback)
-    # global isRobotSpeaking
-
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     print("SETTING UP SPEECH TO TEXT CHECK OF MIC INPUT CONFIG")
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-    # while
-    # if isRobotSpeaking == True:
-    #     print('not record')
-    # else:
     while(True):
-        # print("robot is speaking now: " + str(isRobotSpeaking))
-        # if isRobotSpeaking == True:
-        #     print("ROBOT SPEAKING DO NOT RECORD!")
-        # else:
+
         detect_and_record()
         start = time.time()
         send_Wav_to_google_get_response_txt_file_and_publish()
@@ -202,26 +156,6 @@ if __name__ == '__main__':
         end = time.time()
         print("took this long to get response from google and publish to topic:")
         print(end-start)
-        print("start 5 second sleep")
-        time.sleep(5)
-        print("end 5 second sleep")
-
-
-
-    # recordSentenceToWav()
-    # send_Wav_to_google_get_response_txt_file_and_publish()
-
-
-    # while(1):
-
-    #     print(str(isRobotSpeaking))
-    #     if isRobotSpeaking == True:
-    #         print('not record')
-    #     else:
-    #        recordSentenceToWav()
-    #        start = time.time()
-    #        send_Wav_to_google_get_response_txt_file_and_publish()
-    #        end = time.time()
-    #        print("took this long to get response from google and publish to topic:")
-    #        print(end-start)
-
+        # print("start 3 second sleep")
+        # time.sleep(3)
+        # print("end 3 second sleep")

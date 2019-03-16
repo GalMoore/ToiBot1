@@ -17,7 +17,6 @@ def play_mp3():
 	# ohbot.move(ohbot.TOPLIP,9,1)
 	# # 5 BOTTOMLIP (5 = middle // 9= down)
 	# ohbot.move(ohbot.BOTTOMLIP,9,1)
-	print("trying to open mps file to say it!")
 	subprocess.Popen(['mpg123', '-q', myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3']).wait()
 	# ohbot.reset()
 
