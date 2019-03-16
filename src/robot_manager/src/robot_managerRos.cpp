@@ -34,26 +34,24 @@ void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
 
   // cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
 
-
-
 }
 
-void robotManagerRos::isSpeakingCallback(const std_msgs::String::ConstPtr& msg){
+// void robotManagerRos::isSpeakingCallback(const std_msgs::String::ConstPtr& msg){
 
-  // isSpeakingCallback subscribes to "/is_robot_speaking_topic" in toi_bot_speakers
-  // if robot is now speaking variable isRobotSpeaking will turn true.
+//   // isSpeakingCallback subscribes to "/is_robot_speaking_topic" in toi_bot_speakers
+//   // if robot is now speaking variable isRobotSpeaking will turn true.
 
-  string speaking  = msg->data.c_str();
+//   string speaking  = msg->data.c_str();
 
-  if (speaking == "speaking"){
-    isRobotSpeaking_ = true ;
-   }
+//   if (speaking == "speaking"){
+//     isRobotSpeaking_ = true ;
+//    }
 
-  else {
-    isRobotSpeaking_=  false ;
-  }
+//   else {
+//     isRobotSpeaking_=  false ;
+//   }
   
-}
+// }
 
 
 void robotManagerRos::initSystem(){

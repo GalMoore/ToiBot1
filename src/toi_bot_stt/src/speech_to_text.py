@@ -30,7 +30,7 @@ import time
 myHome = os.path.expanduser('~')
 
 # RATE = 16000
-isRobotSpeaking = False
+# isRobotSpeaking = False
 message = speechTT()
 pub =rospy.Publisher('/stt_topic', speechTT, queue_size=1)
 FORMAT=pyaudio.paInt16
@@ -78,7 +78,6 @@ def record_sentence_to_wav():
 
 def detect_and_record():
 
-    print("here3")
     # WHEN ENTER FUNCTION RESTART ALL VARS AND DELETE PREVIOUS WAV
     global has_reached_first_threshold
     global i 
@@ -96,20 +95,19 @@ def detect_and_record():
                   frames_per_buffer=CHUNK)
     del frames[:]
 
-    print("4")
-
     while(True):
         print("len(frames): " + str(len(frames)))
-        print("create data=stream.read")
+        # print("create data=stream.read")
         data=stream.read(CHUNK)
-        print("created sata=strea.read(CHUNK)")
+        # print("created sata=strea.read(CHUNK)")
 
         data_chunk=array('h',data) #data_chunk is an array of 2048 numbers
         vol=max(data_chunk)
 
         # Has not reached first threshold yet
         if(vol<minimum_tresh_to_trigger_ears and has_reached_first_threshold==False):
-            print("not recording yet - less than vol minimum_tresh_to_trigger_ears!")
+            # print("not recording yet - less than vol minimum_tresh_to_trigger_ears!")
+            pass
         
         # reached threshold first time
         if(vol>minimum_tresh_to_trigger_ears and has_reached_first_threshold==False):
@@ -124,7 +122,7 @@ def detect_and_record():
             frames.append(data) 
             if(i==20):
                 # and then finishes recording
-                print("sending to record_sentence_to_wav()")
+                # print("sending to record_sentence_to_wav()")
                 record_sentence_to_wav()
                 return
 
@@ -134,6 +132,7 @@ def detect_and_record():
             i = 0 
 
         i=i+1
+
 def send_Wav_to_google_get_response_txt_file_and_publish():
 
             google()
@@ -162,23 +161,26 @@ def send_Wav_to_google_get_response_txt_file_and_publish():
             open(pathIntent, 'w').close()
 
 
-isRobotSpeaking 
+# isRobotSpeaking 
 
-def callback(data):
+# def callback(data):
 
-    global isRobotSpeaking
+#     global isRobotSpeaking
 
-    if str(data.data) == "speaking":
-        isRobotSpeaking = True
-        print('robot is spoeaking - close your ears! ')
-    else:
-         isRobotSpeaking = False
-         print('robot is not speaking')
+#     if str(data.data) == "speaking":
+#         isRobotSpeaking = True
+#         print('robot is spoeaking - close your ears! ')
+#     else:
+#          isRobotSpeaking = False
+#          print('robot is not speaking')
 
 
 
 if __name__ == '__main__':
     rospy.init_node('toi_bot_stt_node')
+    # rospy.Subscriber("/is_robot_speaking_topic", String, callback)
+    # global isRobotSpeaking
+
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     print("SETTING UP SPEECH TO TEXT CHECK OF MIC INPUT CONFIG")
@@ -189,6 +191,10 @@ if __name__ == '__main__':
     #     print('not record')
     # else:
     while(True):
+        # print("robot is speaking now: " + str(isRobotSpeaking))
+        # if isRobotSpeaking == True:
+        #     print("ROBOT SPEAKING DO NOT RECORD!")
+        # else:
         detect_and_record()
         start = time.time()
         send_Wav_to_google_get_response_txt_file_and_publish()
@@ -196,56 +202,15 @@ if __name__ == '__main__':
         end = time.time()
         print("took this long to get response from google and publish to topic:")
         print(end-start)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        print("start 5 second sleep")
+        time.sleep(5)
+        print("end 5 second sleep")
 
 
 
     # recordSentenceToWav()
     # send_Wav_to_google_get_response_txt_file_and_publish()
 
-    # rospy.Subscriber("/is_robot_speaking_topic", String, callback)
 
     # while(1):
 

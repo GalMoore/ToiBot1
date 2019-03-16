@@ -17,7 +17,8 @@ def play_mp3():
 	# ohbot.move(ohbot.TOPLIP,9,1)
 	# # 5 BOTTOMLIP (5 = middle // 9= down)
 	# ohbot.move(ohbot.BOTTOMLIP,9,1)
-	subprocess.Popen(['mpg123', '-q', 'src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3']).wait()
+	print("trying to open mps file to say it!")
+	subprocess.Popen(['mpg123', '-q', myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3']).wait()
 	# ohbot.reset()
 
 def get_string_and_say_it():
@@ -29,7 +30,7 @@ def get_string_and_say_it():
 			print("they are the same! ")
 		else:
 			# print(dataR)
-			tts = gTTS(dataR)
+			tts = gTTS(dataR) #,slow=True)
 			tts.save('/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3')
 			play_mp3()
 
