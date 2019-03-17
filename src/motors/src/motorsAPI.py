@@ -73,9 +73,9 @@ def head_tracking_move():
         ohbot.wait(waiting)
 
 
-    ohbot.move(3,8,1)
-    ohbot.wait(2)
-    ohbot.move(3,2,1)
+    # ohbot.move(3,8,1)
+    # ohbot.wait(2)
+    # ohbot.move(3,2,1)
 
 
 

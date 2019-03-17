@@ -105,6 +105,16 @@ visionRos::visionRos(){
 
 
         }
+
+        if ( state_ == takePhoto){
+
+            cout<<" iniside takePhoto "<<endl;
+
+            personManager_.takePhoto(state_,frame);
+            state_ = tracking;
+
+        }
+
         if( state_ == memorization){
             cout<<" iniside remember me "<<endl;
 

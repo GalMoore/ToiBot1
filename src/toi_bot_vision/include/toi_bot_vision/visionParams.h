@@ -4,7 +4,7 @@
 
 using namespace  std;
 
-enum visionState { init = 1, tracking = 2, recognition = 3 , memorization = 4, emotionRecognition = 5  };
+enum visionState { init = 1, tracking = 2, recognition = 3 , memorization = 4, emotionRecognition = 5 , takePhoto = 6 };
 
 
 

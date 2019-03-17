@@ -36,6 +36,23 @@ VisionOutputForManager PersonManager::track(visionState &state,const Mat& frame)
 
 }
 
+void PersonManager::takePhoto(visionState &state,const Mat& frame){
+
+    string path = "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/party_Imgs";
+
+    std::vector<String> images; 
+    glob(path, images);
+
+    int index = images.size() + 1;
+
+    imwrite(path + "/"+to_string(index)+".jpg",frame);
+    waitKey(5000);
+
+
+
+
+}
+
 VisionOutputForManager PersonManager::recognize(visionState &state,const Mat &frame){
 
     VisionOutputForManager visionOutput = faceTracker_.recognizeFace(state,frame);

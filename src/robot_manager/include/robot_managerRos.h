@@ -31,7 +31,7 @@
 
 using namespace std;
 
-enum ActionState { Tracking = 1, Tracking_and_Conversation = 2, RememberMe = 3, EmotionDetection = 4 };
+enum ActionState { Tracking = 1, Tracking_and_Conversation = 2, RememberMe = 3, EmotionDetection = 4 , Take_a_photo = 5};
 
 struct MotorsMsgOutput{
 
@@ -120,6 +120,9 @@ public:
 
     void makeRememberMeAction(const Action& action);
     void makeEmotionDetectionMeAction(const Action& action);
+
+    void takeAPhotoAction(const Action& action);
+
 
 
 

@@ -26,23 +26,37 @@ def speak():
         print(words)
 
         wordCount = len(words)
+        print(str(wordCount))
+        for x in range( int(wordCount )  ):
+            ohbot.move(4,7,1) # TOPLIP
+            ohbot.wait(0.5)
 
-        for x in range(wordCount ):
-            ohbot.move(4,6,1) # TOPLIP
-            ohbot.move(5,6,1)
+            ohbot.move(5,7,1)
+
+            ohbot.wait(0.5)
+
+            ohbot.move(4,5,1)
+
+            ohbot.wait(0.5)
+
+            ohbot.move(5,5,1)
+
+    else:
+       ohbot.move(4,5,1) # TOPLIP
+       ohbot.wait(0.5)
+       ohbot.move(5,5,1)
+       ohbot.wait(0.5)  
             
-            ohbot.wait(0.5)
-           
-            ohbot.move(4,6,1) # TOPLIP
-            ohbot.move(5,6,1)
-
-            ohbot.wait(0.5)
-       
+         
 
 
 
 
 def main(argv):
+    ohbot.move(4,5,1) # TOPLIP
+    ohbot.wait(0.5)
+    ohbot.move(5,5,1)
+    ohbot.wait(0.5)
 
     while 1:
         speak()

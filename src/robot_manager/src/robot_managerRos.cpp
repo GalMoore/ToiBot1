@@ -30,6 +30,10 @@ void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
   voiceInput_.response = msg.response;
   voiceInput_.intent = msg.intent;
 
+  cout<<" from voice callback "<<voiceInput_.query<<endl;
+
+
+
   // cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
 
 }
@@ -63,19 +67,34 @@ void robotManagerRos::initSystem(){
 Action robotManagerRos::takeAction(){
 
     
-    Action action;
-    // give it state Tracking and conversation if ... tbc
-    action.actionState = Tracking_and_Conversation;
+    if ( voiceInput_.query == "take a photo"){
+         cout<<" want to take a pictures"<<endl;
+         Action action;
+         action.actionState = Take_a_photo;
+         action.visionMsgOutput.visionStateOutput = takePhoto;
 
-    // give the visionMsg command "tracking " so it tracks
-    action.visionMsgOutput.visionStateOutput = tracking;
+         return action;
 
-    /// speakers    
-    // give the speakers a response to be said
-    action.speakersMsgOutput.response = voiceInput_.response;
-    action.speakersMsgOutput.query = voiceInput_.query;
+    } else{
 
-    return action;
+        Action action;
+        // give it state Tracking and conversation if ... tbc
+        action.actionState = Tracking_and_Conversation;
+
+        // give the visionMsg command "tracking " so it tracks
+        action.visionMsgOutput.visionStateOutput = tracking;
+
+        /// speakers    
+        // give the speakers a response to be said
+        action.speakersMsgOutput.response = voiceInput_.response;
+        action.speakersMsgOutput.query = voiceInput_.query;
+
+        return action;
+
+
+    }
+
+   
 
 
 }
@@ -190,6 +209,20 @@ void robotManagerRos::makeEmotionDetectionMeAction(const Action& action){
 
 }
 
+void robotManagerRos::takeAPhotoAction(const Action& action){
+
+    ///vision part
+    toi_bot_vision::visionMsgCommand visionMsg;
+    visionMsg.visionStateCommand = takePhoto;
+    visionMsg.personName = "unknown";
+    visionPublisher_.publish(visionMsg);
+
+   
+
+
+
+}
+
 
 
 robotManagerRos::robotManagerRos(){
@@ -218,6 +251,10 @@ robotManagerRos::robotManagerRos(){
 
           case Tracking_and_Conversation:
               makeTrackingAndConversationAction(action);
+
+             break;
+           case Take_a_photo:
+              takeAPhotoAction(action);
 
              break;
 
