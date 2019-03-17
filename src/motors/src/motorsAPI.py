@@ -81,8 +81,16 @@ def head_tracking_move():
 
 
 def main(argv):
+    ohbot.wait(0.5)
     ohbot.reset()
-    ohbot.move(2,7,1) # eyes
+    ohbot.move(0,5,1)
+    ohbot.move(1,5,1)
+    ohbot.move(2,5,1)
+    ohbot.move(3,9,1)
+    ohbot.move(4,5,1)
+    ohbot.move(5,5,1)
+    ohbot.move(6,5,1)
+    # ohbot.move(2,7,1) # eyes
     ohbot.wait(0.5)
 
     while 1:
