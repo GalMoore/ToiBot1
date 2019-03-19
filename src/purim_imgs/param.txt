@@ -1,0 +1,5 @@
+path_/home/toilab/imgs/
+imgType_jpg
+secondBetweenImgs_5
+width_500
+height_500

@@ -9,7 +9,7 @@ from motors.msg import motorsCommand
 
 def tracking_move(deltaX, deltaY, faceArea):
 
-        f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/headTracking.txt',"w+")
+        f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/headTracking.txt',"w+")
         f.write(str(deltaX)+'\n')
         f.write(str(deltaY)+'\n')
         f.write(str(faceArea))
@@ -18,9 +18,11 @@ def tracking_move(deltaX, deltaY, faceArea):
 
 def lips_speak(setnence):
 
-        f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
+        f= open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lipsTalk.txt',"w+")
 
-        f.write(str(setnence)+'\n')
+        f.write(setnence)
+
+        print('write to file lips ->>>  '+ setnence)
 
         f.close()
 
@@ -33,15 +35,16 @@ def callback(data):
     faceArea = int(data.faceArea)
     setnence = str(data.setnence)
 
-
-    f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt',"w+")
-    f.write('')
-    f.close()
+    # f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lipsTalk.txt',"w+")
+    # f.write('')
+    # f.close()
+    
     tracking_move(deltaX,deltaY, faceArea)
 
     if setnence != '':
+        
         lips_speak(setnence)
-        # print('setnence ' + setnence)
+        print('setnence ' + setnence)
 
 def motors():
 

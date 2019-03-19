@@ -1,6 +1,7 @@
 from ohbot import ohbot
 from time import sleep
 import sys
+import os
 
 
 
@@ -9,7 +10,7 @@ def speak():
 
     sentence  = ""
 
-    f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lips_speak.txt','r')
+    f = open('/home/intel/toibot_ws/src/ToiBot1/src/motors/lipsTalk.txt','r')
     out = f.readlines()
     count = 0
     for line in out:
@@ -18,7 +19,9 @@ def speak():
 
     f.close()
 
-    print(str(sentence))
+
+
+    print('the sentence form file is ' + str(sentence))
 
     if sentence != '':
         words = sentence.split()
@@ -27,25 +30,30 @@ def speak():
 
         wordCount = len(words)
         print(str(wordCount))
-        for x in range( int(wordCount )  ):
-            ohbot.move(4,7,1) # TOPLIP
+        
+        ohbot.wait(4)
+
+        for x in range( int(wordCount  / 2 )  ):
+            ohbot.move(4,7,3) # TOPLIP
             ohbot.wait(0.5)
 
-            ohbot.move(5,7,1)
+            ohbot.move(5,7,3)
 
             ohbot.wait(0.5)
 
-            ohbot.move(4,5,1)
+            ohbot.move(4,5,3)
 
             ohbot.wait(0.5)
 
-            ohbot.move(5,5,1)
+            ohbot.move(5,5,3)
 
     else:
        ohbot.move(4,5,1) # TOPLIP
        ohbot.wait(0.5)
        ohbot.move(5,5,1)
-       ohbot.wait(0.5)  
+       ohbot.wait(0.5)
+
+       print('got nothing in lips')  
             
          
 

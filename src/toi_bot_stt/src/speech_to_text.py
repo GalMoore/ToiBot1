@@ -112,6 +112,21 @@ def detect_and_record():
             i = 0 
 
         i=i+1
+def tell_user_acknowledged():
+
+    command = 'python3 /home/intel/toibot_ws/src/ToiBot1/src/motors/src/move_eyes_script.py'
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+
+# # m = motor 
+# 0 HEADNOD   (1= down // 9=up)
+# 1 HEADTURN  (1= MY left // 9=MY right)
+# 2 EYETURN   (1= MY left // 9=MY right)
+# 3 LIDBLINK  (1= closed // 9= open)
+# 4 TOPLIP    (5= middle // 9= up)
+# 5 BOTTOMLIP (5 = middle // 9= down)
+# 6 EYETILT   (1 = up // 9= down)
+
+
 
 def send_Wav_to_google_get_response_txt_file_and_publish():
 
@@ -150,9 +165,6 @@ def callback(data):
         # print("not speaking now at all!")
         boolSpeak = False
 
-
-
-
 if __name__ == '__main__':
     rospy.init_node('toi_bot_stt_node')
     # pub = rospy.Publisher('is_robot_speaking_topic', String,queue_size=1)
@@ -167,13 +179,12 @@ if __name__ == '__main__':
 
         if(boolSpeak == True):
             print("I AM SORRY I CAN NOT LISTN NOW")
-            print("I AM SORRY I CAN NOT LISTN NOW")
-            print("I AM SORRY I CAN NOT LISTN NOW")
-
             pass
+
         else:
             detect_and_record()
             start = time.time()
+            tell_user_acknowledged()
             send_Wav_to_google_get_response_txt_file_and_publish()
             # time.sleep()
             end = time.time()

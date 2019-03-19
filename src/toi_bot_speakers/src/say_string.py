@@ -32,6 +32,7 @@ def get_string_and_say_it():
 			tts = gTTS(dataR) #,slow=True)
 			tts.save('/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3')
 			play_mp3()
+			ohbot.say(dataR)
 
 
 if __name__ == '__main__':

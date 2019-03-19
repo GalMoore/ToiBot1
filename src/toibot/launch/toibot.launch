@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="toi_bot_stt" type="speech_to_text.py" name="toi_bot_stt_node" output="screen"/>
+	<node pkg="motors" type="motors_control.py" name="motors_node" />
+	<node pkg="toi_bot_speakers" type="speakers_control.py" name="speakers_node" />
+</launch>

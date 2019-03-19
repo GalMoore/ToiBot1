@@ -24,7 +24,7 @@ def head_tracking_move():
             faceArea = int(line)
         count = count +1
 
-    #print(str(detlatX) +', '+ str(detlatY) )
+    print(str(detlatX) +', '+ str(detlatY) )
 
     f.close()
 
