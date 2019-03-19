@@ -1,5 +1,5 @@
-path_/home/toilab/imgs/
-imgType_jpg
-secondBetweenImgs_5
-width_500
-height_500
+path:/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/party_Imgs/
+imgType:jpg
+secondBetweenImgs:5
+width:600
+height:600

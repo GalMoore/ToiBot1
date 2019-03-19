@@ -13,7 +13,7 @@ using namespace std;
 int width = 640;
 int height = 480;
 int secondBetweenImgs = 5;
-string path = "/home/toilab/imgs/";
+string path = "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/party_Imgs/";
 string imgType = "jpg";
 
 std::vector<string> explode(const string& s, const char& c)  {
@@ -34,11 +34,11 @@ std::vector<string> explode(const string& s, const char& c)  {
 void readFromFileData(){
 
    string line;
-  ifstream myfile ("/home/toilab/toibot_ws/src/ToiBot1/src/purim_imgs/param.txt");
+  ifstream myfile ("/home/intel/toibot_ws/src/ToiBot1/src/purim_imgs/param.txt");
   int countLine = 0;
   if (myfile.is_open())  {
     while ( getline (myfile,line) )    {
-        std::vector<string> lineSplit =explode(line,'_');
+        std::vector<string> lineSplit =explode(line,':');
         if( countLine == 0){
             path = (lineSplit[1]);
         } else if( countLine == 1){
@@ -49,7 +49,7 @@ void readFromFileData(){
         } else if( countLine == 3){
              width   = atoi(lineSplit[1].c_str());
 
-        } else if( countLine == 3){
+        } else if( countLine == 4){
              height   = atoi(lineSplit[1].c_str());
             myfile.close();
             return;

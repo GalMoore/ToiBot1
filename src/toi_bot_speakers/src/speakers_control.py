@@ -17,16 +17,26 @@ def callback(data):
         # write data.data to txt file
         write_to_file(pathResponse,(data.response))
         # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-        python_bin = myHome+"/ToiBotEnv/bin/python"
 
         # publish that robot is speaking now
         pub.publish("speaking")
         # global isSpeakrsWorking
         # isSpeakrsWorking = True
-        # script say_string checks for new text in response.txt. if found it will say it!
+
+
+        # # #  OPEN LIPS!
+        python_bin3 = "/usr/bin/python3"
+        subprocess.Popen([python_bin3, "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_speakers/src/move_lips_temp.py"]).wait()
+
+        # # script say_string checks for new text in response.txt. if found it will say it!
         script_file = myHome+"/toibot_ws/src/ToiBot1/src/toi_bot_speakers/src/say_string.py"
+        python_bin = myHome+"/ToiBotEnv/bin/python"
         p = subprocess.Popen([python_bin, script_file])
         p_status = p.wait()
+
+        # #  CLOSE LIPS! 
+        python_bin3 = "/usr/bin/python3"
+        subprocess.Popen([python_bin3, "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_speakers/src/close_lips_temp.py"])        
 
         # publish that robot has finished speaking
         pub.publish("finished speaking")

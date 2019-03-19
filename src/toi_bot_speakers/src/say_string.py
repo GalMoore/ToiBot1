@@ -2,7 +2,7 @@
 
 # Loads ohbot python script from here
 # /home/intel/ToiBotEnv/lib/python3.6/site-packages/ohbot/ohbot.py
-import ohbot
+# from ohbot import ohbot
 from time import sleep
 from gtts import gTTS
 import subprocess
@@ -10,6 +10,10 @@ import os
 
 currentResponse ="init"
 myHome = os.path.expanduser('~')
+
+
+# def move_lips():
+	
 
 def play_mp3():
 	# ohbot.reset()
@@ -32,8 +36,8 @@ def get_string_and_say_it():
 			tts = gTTS(dataR) #,slow=True)
 			tts.save('/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_speakers/mp3_file_response/gTTS.mp3')
 			play_mp3()
-			ohbot.say(dataR)
-
+			# move_lips()
+			# ohbot.say()
 
 if __name__ == '__main__':
 	get_string_and_say_it()

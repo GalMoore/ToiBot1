@@ -179,6 +179,7 @@ if __name__ == '__main__':
 
         if(boolSpeak == True):
             print("I AM SORRY I CAN NOT LISTN NOW")
+            time.sleep(1)
             pass
 
         else:
