@@ -1,0 +1,8 @@
+prefix=/home/intel/toibot_ws/src/ToiBot1/install
+
+Name: motors
+Description: Description of motors
+Version: 0.0.0
+Cflags: -I/home/intel/toibot_ws/src/ToiBot1/install/include
+Libs: -L/home/intel/toibot_ws/src/ToiBot1/install/lib 
+Requires: 

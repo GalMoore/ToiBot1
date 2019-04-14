@@ -41,6 +41,8 @@ add_message_files(
   visionMsgOutput.msg
   visionMsgCommand.msg
 
+  visionMsgFeatures.msg
+  visionMsgFeatureOutput.msg
 )
 generate_messages(
   

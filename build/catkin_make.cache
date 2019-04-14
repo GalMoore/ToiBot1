@@ -1,0 +1,2 @@
+motors:purim_imgs:robot_manager:toi_bot_speakers:toi_bot_stt:toi_bot_vision:toibot
+-DCATKIN_DEVEL_PREFIX=/home/intel/toibot_ws/src/ToiBot1/devel -DCMAKE_INSTALL_PREFIX=/home/intel/toibot_ws/src/ToiBot1/install -G Unix Makefiles

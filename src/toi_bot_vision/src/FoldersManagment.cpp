@@ -167,3 +167,4 @@ int FoldersManagment::findTheNumerOfImagesInFolder(string folderNumber, string p
     }
 
 }
+

@@ -40,13 +40,19 @@ void PersonManager::takePhoto(visionState &state,const Mat& frame){
 
     string path = "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/party_Imgs";
 
-    std::vector<String> images; 
-    glob(path, images);
+    //VisionOutputForManager visionOutput = faceTracker_.trackeOverFaces(state,frame);
 
-    int index = images.size() + 1;
+    if( /*visionOutput.detectFace ==*/ true){
 
-    imwrite(path + "/"+to_string(index)+".jpg",frame);
-    waitKey(5000);
+        std::vector<String> images; 
+        glob(path, images);
+
+        int index = images.size() + 1;
+
+        imwrite(path + "/"+to_string(index)+".jpg",frame);
+    }
+
+    
 
 
 
@@ -65,6 +71,10 @@ void PersonManager::rememberMe(visionState &state, string name ,const Mat &frame
 
 }
 
+void PersonManager::removeFacesDatabase(){
+    faceTracker_.removeFacesDatabase();
+}
+
 VisionOutputForManager PersonManager::detectEmotion(visionState& state,const Mat& frame){
 
     Mat cropFace =  faceTracker_.getCropFace(frame);
@@ -72,8 +82,9 @@ VisionOutputForManager PersonManager::detectEmotion(visionState& state,const Mat
         if(cropFace.rows > 0 ){
 
              VisionOutputForManager visionOutputEotion;
-             string name  = emotionDetector_.detectEmotion(cropFace);
-             visionOutputEotion.name = name;
+             string emotion  = emotionDetector_.detectEmotion(cropFace);
+             visionOutputEotion.emotion = emotion;
+             //state = visionOutputEotion.state;
             return visionOutputEotion;
         }
         else {
@@ -82,8 +93,11 @@ VisionOutputForManager PersonManager::detectEmotion(visionState& state,const Mat
         }
 
 
+}
 
+string PersonManager::objectsDetection(visionState& state,const Mat& frame){
 
+   return  faceTracker_.objectsDetection(frame);
 
 }
 

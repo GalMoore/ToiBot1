@@ -6,19 +6,14 @@
 #include "std_msgs/String.h"
 
 
+
 #include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
 #include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgCommand.h"
-
-#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgOutput.h"
-
-
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgFeatures.h"
+#include "/home/intel/toibot_ws/devel/include/toi_bot_vision/visionMsgFeatureOutput.h"
 #include "/home/intel/toibot_ws/devel/include/motors/motorsCommand.h"
-
 #include "/home/intel/toibot_ws/devel/include/motors/motorsCommand.h"
-
-
 #include "/home/intel/toibot_ws/devel/include/toi_bot_speakers/speakersCommand.h"
-
 #include "/home/intel/toibot_ws/devel/include/toi_bot_stt/speechTT.h"
 
 
@@ -114,14 +109,30 @@ public:
 
     Action takeAction();
 
-    void makeTrackingAction(const Action& action);
     
     void makeTrackingAndConversationAction(const Action& action);
 
-    void makeRememberMeAction(const Action& action);
-    void makeEmotionDetectionMeAction(const Action& action);
+    void makeRememberMeAction(string query);
 
-    void takeAPhotoAction(const Action& action);
+    void makeEmotionDetectionMeAction();
+
+    void makeRecognitionAction();
+
+    void makeObjectsRecognitionAction();
+
+    void makecCleaningFacesDatabaseAction();
+
+    void makeTakeAPhotoAction();
+
+
+
+
+
+    void visionFeaturesCallback(const toi_bot_vision::visionMsgFeatureOutput& msg);
+
+
+    void takeActionOfVisionFeaturesSim();
+
 
 
 
@@ -138,12 +149,14 @@ public:
     string lastStringQueryPublished_;
 
     ros::Subscriber visonSubInut_;
-    // ros::Subscriber checkIfRobotSpeaking_;
 
     VisionInput visionInput_;
     ros::Publisher visionPublisher_;
+    ros::Publisher visionFeaturePublisher_;
+    ros::Subscriber visionFeatureInput_;
 
-    // bool isRobotSpeaking_ = false;
+
+
 
     ros::Publisher motorsPublisher_;
     ros::Publisher speakersPublisher_;
@@ -152,7 +165,22 @@ public:
     ros::Subscriber voiceSubInput_;
     VoiceInput  voiceInput_;
 
+
     bool init_= false;
+
+
+    bool canTalkByDialogFlow = true;
+    
+    bool lastCommandWasEmotion = false;
+    bool lastCommandWasRememberMe = false;
+    bool lastCommandWasRecognition = false;
+    bool lastCommandWasObjectsRecognition = false;
+    bool lastCommandWasCleaningFacesDatabase = false;
+    bool lastCommandWasTakeAPhoto = false;
+
+
+
+
 
 
     

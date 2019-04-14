@@ -42,6 +42,9 @@ public:
     void rememberMe(visionState &state, string name ,const Mat &frame);
     VisionOutputForManager detectEmotion(visionState &state, const Mat& frame);
     void takePhoto(visionState &state,const Mat& frame);
+    string objectsDetection(visionState& state,const Mat& frame);
+    void removeFacesDatabase();
+
 
 
 

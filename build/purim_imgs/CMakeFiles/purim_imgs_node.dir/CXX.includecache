@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/intel/toibot_ws/src/ToiBot1/src/purim_imgs/src/main.cpp
+opencv2/core/core.hpp
+-
+opencv2/highgui/highgui.hpp
+-
+iostream
+-
+string
+-
+fstream
+-
+opencv2/imgproc/imgproc.hpp
+/home/intel/toibot_ws/src/ToiBot1/src/purim_imgs/src/opencv2/imgproc/imgproc.hpp
+iostream
+-
+

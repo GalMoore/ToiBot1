@@ -1,0 +1,8 @@
+prefix=/home/intel/toibot_ws/src/ToiBot1/install
+
+Name: purim_imgs
+Description: Description of purim_imgs
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/intel/toibot_ws/src/ToiBot1/install/lib 
+Requires: 

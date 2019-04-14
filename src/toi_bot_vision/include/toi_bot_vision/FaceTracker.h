@@ -18,11 +18,27 @@
 #include <dlib/svm.h>
 #include <fstream>
 
+#include <chrono>
+#include <thread>
+
+
+
+// #include <opencv2/dnn.hpp>
+// #include <opencv2/dnn/shape_utils.hpp>
+// #include <opencv2/imgproc.hpp>
+// #include <opencv2/highgui.hpp>
+
 #include "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionParams.h"
 
+
+
 using namespace cv;
+//using namespace cv::dnn;
+
 using namespace std;
 using namespace dlib;
+
+
 
 
 
@@ -79,6 +95,9 @@ public:
 
     void rememberMe(visionState &state, string name ,const Mat &frame);
 
+    void removeFacesDatabase();
+
+
 
     double checkMatch(std::vector<matrix<float,0,1>> faceOrig_descriptors ,
                                     string faceFolderPath);
@@ -91,6 +110,17 @@ public:
     void createFolderWithName(string folderName, string path) const;
 
     Mat getCropFace(const Mat& frame);
+
+    string objectsDetection(const Mat& frame);
+
+
+    string detectShirtColor(cv::Rect faceRect, const Mat& frame);
+    string findBestColor(const Mat& crop);
+
+    void removeFolder(const char* path);
+
+
+
 
 
 
@@ -108,6 +138,9 @@ private:
     bool canRecognizeAgain_ = true;
 
     pfunct_type learned_pfunct;
+
+    //dnn::Net net;
+
 
 
 

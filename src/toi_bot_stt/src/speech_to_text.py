@@ -25,7 +25,7 @@ FORMAT=pyaudio.paInt16
 CHANNELS=1
 RATE=16000 # takes a few hundread samples per second
 CHUNK=1024
-minimum_tresh_to_trigger_ears=1900 # MAKE ASURE INPUT IS THE WEBACAM AND SET TO FULL
+minimum_tresh_to_trigger_ears=9300 # MAKE ASURE INPUT IS THE WEBACAM AND SET TO FULL
 FILE_NAME= myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav'
 audio=pyaudio.PyAudio() #instantiate the pyaudio
 frames=[] #starting recording into this array
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 
         if(boolSpeak == True):
             print("I AM SORRY I CAN NOT LISTN NOW")
-            time.sleep(1)
+            time.sleep(2)
             pass
 
         else:

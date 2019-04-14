@@ -55,6 +55,9 @@ public:
 
     void createFolderWithName(string folderName, string path) const;
 
+    void removeFolder(const char* path);
+
+
 };
 
 

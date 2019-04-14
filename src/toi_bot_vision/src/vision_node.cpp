@@ -5,7 +5,9 @@
 using namespace std;
 
 
+
 int main(int argc, char **argv) {
+
     ros::init(argc, argv, "vision_node");
     visionRos visionManager;
     ros::spin();

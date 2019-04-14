@@ -1,0 +1,8 @@
+prefix=/home/intel/toibot_ws/src/ToiBot1/devel
+
+Name: toi_bot_stt
+Description: Description of toi_bot_stt
+Version: 0.0.0
+Cflags: -I/home/intel/toibot_ws/src/ToiBot1/devel/include
+Libs: -L/home/intel/toibot_ws/src/ToiBot1/devel/lib 
+Requires: message_runtime

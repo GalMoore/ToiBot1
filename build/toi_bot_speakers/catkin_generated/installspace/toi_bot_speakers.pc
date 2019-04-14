@@ -1,0 +1,8 @@
+prefix=/home/intel/toibot_ws/src/ToiBot1/install
+
+Name: toi_bot_speakers
+Description: Description of toi_bot_speakers
+Version: 0.0.0
+Cflags: -I/home/intel/toibot_ws/src/ToiBot1/install/include
+Libs: -L/home/intel/toibot_ws/src/ToiBot1/install/lib 
+Requires: 

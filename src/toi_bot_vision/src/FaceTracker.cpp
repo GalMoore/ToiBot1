@@ -3,14 +3,27 @@
 
 FaceTracker::FaceTracker(){
 
-
+    ///face detection with landsmark
     deserialize("/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/shape_predictor_68_face_landmarks.dat") >> pose_model_;
-    //deserialize("/home/intel/toibot_ws/src/toi_bot_vision/models/shape_predictor_5_face_landmarks.dat") >> sp;
 
     //face recognition
     deserialize("/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/dlib_face_recognition_resnet_model_v1.dat") >> net;
 
 
+    ///dnn objects detection
+
+    // String modelConfiguration = "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/MobileNetSSD_deploy.prototxt.txt"; //parser.get<string>("proto");
+    // String modelBinary =  "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/models/MobileNetSSD_deploy.caffemodel";   
+
+
+    // //! [Create the importer of Caffe model]
+    // Ptr<dnn::Importer> importer;
+    // importer = dnn::createCaffeImporter(modelConfiguration, modelBinary);
+
+
+    // //! [Initialize network]
+    // importer->populateNet(net);
+    // importer.release();          //We don't need importer anymore
 
 
 }
@@ -21,7 +34,6 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
 
     std::vector<std::vector<cv::Point> > landmarksFaces;
     std::vector<cv::Rect> facesRects;
-    Mat tmp = frame.clone();
     cv_image<bgr_pixel> cimg(frame);
 
     // Detect faces
@@ -54,7 +66,7 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
         }
         landmarksFaces.push_back(landmarks);
     }
-    for(int i = 0; i < landmarksFaces.size(); i++){
+    /*for(int i = 0; i < landmarksFaces.size(); i++){
         std::vector<cv::Point>  landmarks = landmarksFaces[i];
 
         for (int j = 0; j < landmarks.size(); j++){
@@ -63,10 +75,7 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
         }
 
 
-    }
-
-
-    const int close_face_threshold = 7000;
+    }*/
 
     ///no faces at all
     if(facesRects.size() == 0 ){
@@ -89,106 +98,46 @@ VisionOutputForManager FaceTracker::trackeOverFaces(visionState& state,const Mat
          return visionOutput;
     }
 
+    Mat tmp = frame.clone();
+    Rect r = closestRectCenter;
+    double area = r.area();
+    cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
 
-    ///if biggest rect is good publish command (delta x, delta y
-    /// else publish "no close-face"
-
-    if( /*canRecognizeAgain_ == true */ false){
-
-        for(int i =0; i < facesRects.size(); i++){
-            Rect r = facesRects[i];
-            double area = r.area();
-            if( /*r.area() > close_face_threshold*/ true ){
-
-                Mat tmp = frame.clone();
-                cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
-
-                state = recognition;
-
-                VisionOutputForManager visionOutput;
-
-                 visionOutput.detectFace = true;
-
-                 Point faceCenter = Point( (r.x + r.width /2), (r.y + r.height /2) );
-                 Point frameCenter = Point((frame.cols/2), (frame.rows/2));
-
-                 visionOutput.deltaX = frameCenter.x - faceCenter.x;
-                 visionOutput.deltaY = frameCenter.y - faceCenter.y;
-
-                 visionOutput.canRecognize = false;
-                 visionOutput.name = "";
-                 visionOutput.emotion = "";
+                     
 
 
-                 circle(tmp, faceCenter,5, Scalar(0,255,0), -1, 8, 0);
-                 circle(tmp, frameCenter,5, Scalar(255,0,0), -1, 8, 0);
+    VisionOutputForManager visionOutput;
 
-                 cv::putText(tmp,to_string(visionOutput.deltaX)+","+to_string(visionOutput.deltaY),
-                             cv::Point(100,100),1, 3, cv::Scalar(0,255,0),3,8);
-
-                 imshow("tracker",tmp);
-                 waitKey(1);
-
-                 return visionOutput;
-
-            } else{
-                cout<<" face are fare "<<endl;
-            }
-        }
-
-    } else {
+    state = tracking;
 
 
-        Rect r = closestRectCenter;
-        double area = r.area();
+    visionOutput.detectFace = true;
 
-        if(/* r.area() > close_face_threshold*/ true){
+    Point faceCenter = Point( (r.x + r.width /2), (r.y + r.height /2) );
+    Point frameCenter = Point((frame.cols/2), (frame.rows/2));
 
-            Mat tmp = frame.clone();
-            cv::rectangle(tmp,r,cv::Scalar(0,255,0),2,8,0);
-
-
-            VisionOutputForManager visionOutput;
-
-            state = tracking;
+    visionOutput.deltaX = frameCenter.x - faceCenter.x;
 
 
-             visionOutput.detectFace = true;
-
-             Point faceCenter = Point( (r.x + r.width /2), (r.y + r.height /2) );
-             Point frameCenter = Point((frame.cols/2), (frame.rows/2));
-
-             visionOutput.deltaX = frameCenter.x - faceCenter.x;
-
-
-             visionOutput.deltaY = frameCenter.y - faceCenter.y;
-             visionOutput.canRecognize = false;
-             visionOutput.name = "";
-             visionOutput.emotion = "";
-             visionOutput.faceArea = area;
+    visionOutput.deltaY = frameCenter.y - faceCenter.y;
+    visionOutput.canRecognize = false;
+    visionOutput.name = "";
+    visionOutput.emotion = "";
+    visionOutput.faceArea = area;
 
 
-             circle(tmp, faceCenter,5, Scalar(0,255,0), -1, 8, 0);
-             circle(tmp, frameCenter,5, Scalar(255,0,0), -1, 8, 0);
+    circle(tmp, faceCenter,5, Scalar(0,255,0), -1, 8, 0);
+    circle(tmp, frameCenter,5, Scalar(255,0,0), -1, 8, 0);
 
-             cv::putText(tmp,to_string(visionOutput.deltaX)+","+to_string(visionOutput.deltaY),
-                         cv::Point(100,100),1, 3, cv::Scalar(0,255,0),3,8);
+    cv::putText(tmp,to_string(visionOutput.deltaX)+","+to_string(visionOutput.deltaY),
+                cv::Point(100,100),1, 3, cv::Scalar(0,255,0),3,8);
 
 
 
-             imshow("tracker",tmp);
-             waitKey(1);
+    imshow("tracker",tmp);
+    waitKey(1);
 
-             return visionOutput;
-
-        }
-
-
-
-    }
-
-
-
+    return visionOutput;
 
 }
 
@@ -229,6 +178,23 @@ VisionOutputForManager FaceTracker::recognizeFace(visionState &state,const Mat& 
            matrix<rgb_pixel> face_chip;
            extract_image_chip(imgOriginal, get_face_chip_details(shape,150,0.25), face_chip);
            facesOriginal.push_back(move(face_chip));
+
+        }
+
+        if ( facesOriginal.size() != 1){
+           
+            state = tracking;
+
+            VisionOutputForManager visionOutput;
+
+            visionOutput.detectFace = true;
+            visionOutput.deltaX = 0;
+            visionOutput.deltaY = 0;
+            visionOutput.canRecognize = false;
+            visionOutput.name = "";
+            visionOutput.emotion = "";
+
+            return visionOutput; 
 
         }
 
@@ -444,6 +410,42 @@ void FaceTracker::createFolderWithName(string folderName, string path) const {
 
 }
 
+
+
+void FaceTracker::removeFolder(const char* path){
+    
+    struct dirent *entry = NULL;
+    DIR *dir = NULL;
+    dir = opendir(path);
+    while(entry = readdir(dir))
+    {   
+            DIR *sub_dir = NULL;
+            FILE *file = NULL;
+            char abs_path[300] = {0};
+            if(*(entry->d_name) != '.')
+            {   
+                    sprintf(abs_path, "%s/%s", path, entry->d_name);
+                   
+                    if(sub_dir = opendir(abs_path))
+                    {       
+                            closedir(sub_dir);
+
+                            /// remove the img
+                             string pathWithFolderNumber(abs_path);
+                             cv::String folder = pathWithFolderNumber+"/*.jpg";
+                             std::vector<cv::String> Pictures;
+                             cv::glob(folder, Pictures);
+                             remove(Pictures[0].c_str());
+
+                            remove(abs_path);
+                    } 
+                    
+            }   
+    }   
+    remove(path);
+}
+    
+
 bool FaceTracker::checkIfFolderIsEmpty(string path) const {
 
     char cmd[1024];
@@ -468,6 +470,232 @@ bool FaceTracker::checkIfFolderIsEmpty(string path) const {
     }
 
 }
+
+string FaceTracker::objectsDetection(const Mat& frame){
+
+    cv_image<bgr_pixel> cimg(frame);
+
+    // Detect faces
+    std::vector<dlib::rectangle> faces = detector_(cimg);
+    // Find the pose of each face.
+    std::vector<full_object_detection> shapes;
+
+    std::vector<cv::Rect> facesRects;
+
+    Rect closestRectCenter;
+    double  minDistRectCenter = 1000000;
+    for (unsigned long i = 0; i < faces.size(); ++i){
+        dlib:: rectangle r = faces[i];
+        dlib::point tl = r.tl_corner();
+        int x = tl.x();
+        int y = tl.y();
+        cv::Rect cvRect = Rect(x,y,r.width(),r.height());
+        double distCenter =  sqrt(pow((cvRect.x - frame.cols), 2) +
+                                  pow((cvRect.y - frame.rows), 2));
+        if ( distCenter < minDistRectCenter){
+            minDistRectCenter = distCenter;
+            closestRectCenter = cvRect;
+        }
+
+        facesRects.push_back(cvRect);
+      
+    }
+
+
+    std::vector<string> shirtsColors;
+
+    for(int i = 0; i < facesRects.size(); i++ ){
+
+        string shirtColor = detectShirtColor(facesRects[i],frame);
+        shirtsColors.push_back(shirtColor);
+    }
+
+    string number = to_string(facesRects.size());
+
+    if( facesRects.size() == 0){
+        return "i dont see any faces right now ";
+    }
+    
+    std::vector<string> shirtsDescription;
+
+    if(  shirtsColors.size() == 1 ){
+        shirtsDescription.push_back(shirtsColors[0]+" shirt ");
+            
+    } else {
+         
+        for(int i =0; i < shirtsColors.size(); i++){
+
+            
+
+            shirtsDescription.push_back(shirtsColors[i]);
+            if(i !=  shirtsColors.size()- 1 ){
+                shirtsDescription.push_back("shirt and "); 
+            } else {
+                shirtsDescription.push_back("shirt"); 
+            }
+        
+        }
+
+    }
+
+   
+    string finalDescription;
+    std::for_each(shirtsDescription.begin(),shirtsDescription.end(), 
+            [&](const std::string &piece){ finalDescription += piece; });
+
+
+    return "i see "+number+" person with "+ finalDescription;
+
+
+
+}
+
+void FaceTracker::removeFacesDatabase(){
+
+    cout<<" remove face databse func "<<endl;
+    const char* path = "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/faces";
+    removeFolder(path);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    createFolderWithName("faces", "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision");
+
+
+
+}
+
+
+
+
+string FaceTracker::detectShirtColor(cv::Rect faceRect, const Mat& frame){
+    
+    ///debug
+    Mat debug = frame.clone();
+
+    int maxInRows =  frame.rows - faceRect.y + faceRect.height;
+
+    cv::Rect shirtRoi = cv::Rect(faceRect.x,
+                        faceRect.y+faceRect.height,
+                        faceRect.width ,
+                        maxInRows /2 );
+    cv::rectangle(debug,shirtRoi,cv::Scalar(255,0,0),2,8,0);
+ 
+    if( shirtRoi.x > 0 && shirtRoi.y > 0 
+        &&  shirtRoi.x +  shirtRoi.width < frame.cols
+        && shirtRoi.y +  shirtRoi.height < frame.rows){
+
+
+            Mat crop  = frame(shirtRoi);
+            cvtColor(crop,crop,COLOR_BGR2Lab);
+            string color = findBestColor(crop);
+            cout<<color<<endl;
+            cv::putText(crop,color,
+                cv::Point(crop.cols/2,crop.rows/2),1, 3, cv::Scalar(0,255,0),3,8);
+            
+   
+
+            
+            imshow("crop",crop);
+            waitKey(1);
+
+            return color;
+        }
+
+
+   
+
+
+    return "unknown color ";
+
+
+
+
+}
+
+string FaceTracker::findBestColor(const Mat& crop){
+
+    string colourNames [] = {"black"," Blue", /*"Dark blue"*/"black", "Dark brown", "brown", "green", "dark green", "orange",
+            "pink","dark pink", /*"dark purple",*/ "red", "dark red", "yellow","white"};
+
+    cv::Point3i blackLAB = cv::Point3i(1,128,128);
+    cv::Point3i blueLAB = cv::Point3i(224,117,114);
+    cv::Point3i DarkBlueLAB = cv::Point3i(82,207,20);
+    cv::Point3i DarkBrownLAB = cv::Point3i(83,144,163);
+    cv::Point3i brownLAB = cv::Point3i(115,135,152);
+    cv::Point3i greenLAB = cv::Point3i(223,42,211);
+    cv::Point3i darkGeenLAB = cv::Point3i(112,84,159);
+    cv::Point3i orangeLAB = cv::Point3i(156,186,199);
+    cv::Point3i pinkLAB = cv::Point3i(179,159,129);
+    cv::Point3i darkPinkLAB = cv::Point3i(139,213,119);
+    cv::Point3i darkPurpleLAB = cv::Point3i(77,185,92);
+    cv::Point3i redLAB = cv::Point3i(119,200,184);
+    cv::Point3i darkRedLAB = cv::Point3i(90,184,152);
+    cv::Point3i yellowLAB = cv::Point3i(255,128,128);
+    cv::Point3i whiteLAB = cv::Point3i(255,128,255);
+
+
+    Point3i colorLab [] = {blackLAB,blueLAB,DarkBlueLAB,DarkBrownLAB,brownLAB,greenLAB,
+       darkGeenLAB,orangeLAB,pinkLAB,darkPinkLAB,/*darkPurpleLAB,*/redLAB,darkRedLAB,yellowLAB,whiteLAB };
+
+    int sizeColors = sizeof(colorLab)/sizeof(*colorLab);
+    float scores[sizeColors];
+    for(int i = 0; i < sizeColors; i++){
+        scores[i] = 0;
+    }
+
+    
+    double avgL;
+    double sumL =0;
+
+    double avgA;
+    double sumA =0;
+
+    double avgB;
+    double sumB =0;
+    
+
+    for (int y = 0; y < crop.rows; ++y){
+        for (int x = 0; x < crop.cols; ++x){
+            int l = crop.at<cv::Vec3b>(y,x)[0];
+            int a = crop.at<cv::Vec3b>(y,x)[1];
+            int b = crop.at<cv::Vec3b>(y,x)[2];
+
+            sumL = sumL + l;
+            sumA = sumA + a;
+            sumB = sumL + b;            
+        }
+    }
+    
+    avgL = sumL /double( crop.rows*crop.cols);
+    avgA = sumA /double( crop.rows*crop.cols);
+    avgB = sumB /double( crop.rows*crop.cols);
+
+    //cout<<" avgL "<<avgL<<" avgA "<<avgA<<" avgB "<<avgB<<endl;
+
+    for( int i = 0; i < sizeColors; i++){
+                cv::Point3i color = colorLab[i];
+                 double dist = sqrt(pow((color.x -avgL), 2) +
+                                pow((color.y - avgA), 2) +
+                                pow((color.z - avgB), 2));
+                scores[i] = dist;
+
+
+            }
+
+    double minDiff = 1000000;
+    int index;
+    for(int i = 0; i < sizeColors; i++){
+        if( scores[i] < minDiff){
+            minDiff = scores[i];
+            index = i; 
+        }
+    }
+
+    return colourNames[index];
+
+
+
+}
+
 
 
 

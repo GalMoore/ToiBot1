@@ -113,18 +113,7 @@ string EmotionDetection::detectEmotion(const Mat& faceImg){
                 finalEmotion = "surprised";
             }
 
-            /*VisionOutputForManager visionOutput;
-
-
-             visionOutput.detectFace = true;
-             visionOutput.deltaX = 0;
-             visionOutput.deltaY = 0;
-             visionOutput.canRecognize = false;
-             visionOutput.name = "";
-             visionOutput.emotion = finalEmotion;
-
-             return visionOutput;*/
-
+          
             return finalEmotion;
         }
 

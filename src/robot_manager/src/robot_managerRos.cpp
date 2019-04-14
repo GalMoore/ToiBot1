@@ -8,36 +8,6 @@
 
 using namespace std;
 
-
-
-
-void robotManagerRos::visionCallback(const toi_bot_vision::visionMsgOutput& msg){
-
-
-    visionInput_.detectFace = msg.detectFace;
-    visionInput_.deltaX = msg.deltaX;
-    visionInput_.deltaY = msg.deltaY;
-    visionInput_.canRecognize = msg.canRecognize;
-    visionInput_.name = msg.name;
-    visionInput_.emotion = msg.emotion;
-    visionInput_.faceArea = msg.faceArea;
-
-}
-
-void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
-
-  voiceInput_.query = msg.query;
-  voiceInput_.response = msg.response;
-  voiceInput_.intent = msg.intent;
-
-  cout<<" from voice callback "<<voiceInput_.query<<endl;
-
-
-
-  // cout<<" voiceInput_.response "<<voiceInput_.response<<endl;
-
-}
-
 void robotManagerRos::initSystem(){
 
     //init once
@@ -47,7 +17,10 @@ void robotManagerRos::initSystem(){
 
         voiceSubInput_ =    node_.subscribe("/stt_topic", 1, &robotManagerRos::voiceCallback, this);
 
-        // checkIfRobotSpeaking_ =  node_.subscribe("/is_robot_speaking_topic", 1, &robotManagerRos::isSpeakingCallback, this);        
+        visionFeatureInput_ = node_.subscribe("vision_publisher_features_output", 1, &robotManagerRos::visionFeaturesCallback, this);
+
+        ///emotion, recognition .... 
+        visionFeaturePublisher_ = node_.advertise<toi_bot_vision::visionMsgFeatures>("vision_publisher_features",1000, true);
 
         visionPublisher_ = node_.advertise<toi_bot_vision::visionMsgCommand>(
                     "vision_publisher_command", 1, true);
@@ -64,69 +37,221 @@ void robotManagerRos::initSystem(){
     }
 }
 
-Action robotManagerRos::takeAction(){
+void robotManagerRos::visionCallback(const toi_bot_vision::visionMsgOutput& msg){
+
+
+    visionInput_.detectFace = msg.detectFace;
+    visionInput_.deltaX = msg.deltaX;
+    visionInput_.deltaY = msg.deltaY;
+    visionInput_.canRecognize = msg.canRecognize;
+    visionInput_.name = msg.name;
+    visionInput_.emotion = msg.emotion;
+    visionInput_.faceArea = msg.faceArea;
+
+
+}
+void robotManagerRos::visionFeaturesCallback(const toi_bot_vision::visionMsgFeatureOutput& msg){
+
+    string answer = msg.featureAnswer;
+    cout<<" the answer is "<<answer<<endl;
+    /// emotion answer
+    if( (answer.find("sad") != string::npos) || 
+          (answer.find("happy") != string::npos) ||
+           (answer.find("neutral") != string::npos) ||
+           (answer.find("surprised") != string::npos)  ){
+          
+        toi_bot_speakers::speakersCommand speakersMsg;
+        speakersMsg.response =  " you are look very "+ answer;
+        speakersPublisher_.publish(speakersMsg);
+        canTalkByDialogFlow = true;
+    }
+    ///remember me 
+    else if ( (answer.find("it's done") != string::npos) ){
+        string name = answer;  
+        toi_bot_speakers::speakersCommand speakersMsg;
+        speakersMsg.response = answer;
+        speakersPublisher_.publish(speakersMsg);
+        canTalkByDialogFlow = true;
+    }
+     // face recognition
+      else if ( (answer.find("your name is") != string::npos) ||
+          (answer.find("know you yet") != string::npos) ){
+        string name = answer;  
+        toi_bot_speakers::speakersCommand speakersMsg;
+        speakersMsg.response = answer;
+        speakersPublisher_.publish(speakersMsg);
+        canTalkByDialogFlow = true;
+    } 
+    // objects recognition
+      else if ( (answer.find("i see") != string::npos)  ){
+        toi_bot_speakers::speakersCommand speakersMsg;
+        speakersMsg.response = answer;
+        speakersPublisher_.publish(speakersMsg);
+        canTalkByDialogFlow = true;
+    } 
+    // remove faces database 
+      else if ( (answer.find("faces database") != string::npos)  ){
+        toi_bot_speakers::speakersCommand speakersMsg;
+        speakersMsg.response = answer;
+        speakersPublisher_.publish(speakersMsg);
+        canTalkByDialogFlow = true;
+    } 
+    // take a photo 
+    else if ( (answer.find("ok, don't forget to smile") != string::npos)  ){
+        toi_bot_speakers::speakersCommand speakersMsg;
+        speakersMsg.response = answer;
+        speakersPublisher_.publish(speakersMsg);
+        canTalkByDialogFlow = true;
+    } 
+    
 
     
-    if ( voiceInput_.query == "take a photo"){
-         cout<<" want to take a pictures"<<endl;
-         Action action;
-         action.actionState = Take_a_photo;
-         action.visionMsgOutput.visionStateOutput = takePhoto;
+}
+void robotManagerRos::voiceCallback(const toi_bot_stt::speechTT &msg){
 
-         return action;
+  voiceInput_.query = msg.query;
+  voiceInput_.response = msg.response;
+  voiceInput_.intent = msg.intent;
+
+  if( voiceInput_.query !=""){
+     //cout<<"query"<<voiceInput_.query<<" response "<<voiceInput_.response<<endl;
+
+  }
+
+}
+
+
+
+void robotManagerRos::takeActionOfVisionFeaturesSim(){
+
+    ///emotion
+    if (lastCommandWasEmotion == false && (voiceInput_.query.find("my mood") != string::npos) 
+      ){
+         makeEmotionDetectionMeAction();
+         lastCommandWasEmotion = true; 
+         canTalkByDialogFlow = false;
+    } 
+    if( !(voiceInput_.query.find("my mood") != string::npos) ){
+        lastCommandWasEmotion = false;
+    } 
+
+    ////remember me 
+    if (lastCommandWasRememberMe == false && (voiceInput_.query.find("remember me") != string::npos) 
+      ){
+         
+         
+         makeRememberMeAction(voiceInput_.query);
+         lastCommandWasRememberMe = true; 
+         canTalkByDialogFlow = false;
+    } 
+    if( !(voiceInput_.query.find("remember me") != string::npos) ){
+        lastCommandWasRememberMe = false;
+    } 
+
+    /// face recognition
+    if (lastCommandWasRecognition == false && (voiceInput_.query.find("recognize me") != string::npos) 
+      ){    
+         
+         makeRecognitionAction();
+         lastCommandWasRecognition = true; 
+         canTalkByDialogFlow = false;
+    } 
+    if( !(voiceInput_.query.find("recognize me") != string::npos) ){
+        lastCommandWasRecognition = false;
+    } 
+
+    /// objects recognition
+    if (lastCommandWasObjectsRecognition == false && (voiceInput_.query.find("what do you see") != string::npos) 
+      ){    
+         
+         makeObjectsRecognitionAction();
+         lastCommandWasObjectsRecognition = true; 
+         canTalkByDialogFlow = false;
+    } 
+    if( !(voiceInput_.query.find("what do you see") != string::npos) ){
+        lastCommandWasObjectsRecognition = false;
+    } 
+
+    /// cleaning faces database
+    if (lastCommandWasCleaningFacesDatabase == false && (voiceInput_.query.find("remove faces database") != string::npos) 
+      ){    
+         
+         makecCleaningFacesDatabaseAction();
+         lastCommandWasCleaningFacesDatabase = true; 
+         canTalkByDialogFlow = false;
+    } 
+    if( !(voiceInput_.query.find("remove faces database") != string::npos) ){
+        lastCommandWasCleaningFacesDatabase = false;
+    } 
+
+    if ( (voiceInput_.query.find("take a") != string::npos) || 
+          (voiceInput_.query.find("photo") != string::npos) ||
+           (voiceInput_.query.find("picture") != string::npos) ){
+          
+          makeTakeAPhotoAction();
+          lastCommandWasTakeAPhoto = true; 
+          canTalkByDialogFlow = false;          
+    }
+
+    if( !(voiceInput_.query.find("smile") != string::npos) 
+        ){
+        lastCommandWasTakeAPhoto = false;
+    }
+
+}
+
+Action robotManagerRos::takeAction(){
+
+
+    takeActionOfVisionFeaturesSim();   
+
+        
+    /// take a photo
+    if ( (voiceInput_.query.find("take a") != string::npos) || 
+          (voiceInput_.query.find("photo") != string::npos) ||
+           (voiceInput_.query.find("picture") != string::npos) ){
+          cout<<" want to take a pictures"<<endl;
+          Action action;
+          action.actionState = Take_a_photo;
+          action.visionMsgOutput.visionStateOutput = takePhoto;
+
+          
+          action.speakersMsgOutput.response = voiceInput_.response;
+          action.speakersMsgOutput.query = voiceInput_.query;
+
+          return action;
 
     } else{
-
         Action action;
-        // give it state Tracking and conversation if ... tbc
         action.actionState = Tracking_and_Conversation;
 
-        // give the visionMsg command "tracking " so it tracks
         action.visionMsgOutput.visionStateOutput = tracking;
 
         /// speakers    
-        // give the speakers a response to be said
         action.speakersMsgOutput.response = voiceInput_.response;
         action.speakersMsgOutput.query = voiceInput_.query;
+
 
         return action;
 
 
     }
+         /// tracking and conversation
+
+    Action action;
+    action.actionState = Tracking_and_Conversation;
+
+    action.visionMsgOutput.visionStateOutput = tracking;
+
+    /// speakers    
+    action.speakersMsgOutput.response = voiceInput_.response;
+    action.speakersMsgOutput.query = voiceInput_.query;
+
+
+    return action;
+
 
    
-
-
-}
-
-
-void robotManagerRos::makeTrackingAction(const Action& action){
-
-
-    ///vision part
-    toi_bot_vision::visionMsgCommand visionMsg;
-    visionMsg.visionStateCommand = visionState::tracking;
-    visionMsg.personName = "unknown";
-    visionPublisher_.publish(visionMsg);
-
-    ///motors part
-    motors::motorsCommand motorsMsg;
-   
-
-     motorsMsg.deltaX =  visionInput_.deltaX;
-     motorsMsg.deltaY =  visionInput_.deltaY;
-     motorsMsg.faceArea = visionInput_.faceArea;
-
-     // debug only
-     // cout<<(int) motorsMsg.deltaX <<", "<<(int)motorsMsg.deltaY<<", "<<(int)motorsMsg.faceArea<<endl;
-
-     motorsPublisher_.publish(motorsMsg);
-
-     ros::spinOnce();
-     loop_rate_.sleep();
-
-    
-
 
 
 }
@@ -135,7 +260,6 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
 
   //within the robotmanagerROS while loop, when the actionState points to this 
   //state, the code below will run in a loop until another state is called.
-
 
 
     ///vision part
@@ -157,23 +281,21 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
 
      toi_bot_speakers::speakersCommand speakersMsg;
      speakersMsg.response =   action.speakersMsgOutput.response;
-     //debug only
-     // cout<<"speakersMsg.response: " << speakersMsg.response << endl;
 
+    if (canTalkByDialogFlow == true){
+        //If the message received from Dialogflow is not empty
+      if( action.speakersMsgOutput.response != ""){
+        // and the query heard from user is new (not same as last query)
+        if( action.speakersMsgOutput.query!= lastStringQueryPublished_){
+          // publish the response from dialogflow to speakers to be spoken! 
+          speakersPublisher_.publish(speakersMsg);
+          lastStringQueryPublished_= action.speakersMsgOutput.query;
 
-     //If the message received from Dialogflow is not empty
-     if( action.speakersMsgOutput.response != ""){
-      // and the query heard from user is new (not same as last query)
-      if( action.speakersMsgOutput.query!= lastStringQueryPublished_){
-        // publish the response from dialogflow to speakers to be spoken! 
-        speakersPublisher_.publish(speakersMsg);
-        lastStringQueryPublished_= action.speakersMsgOutput.query;
-        // cout<<lastStringQueryPublished_<<endl;
+          motorsMsg.setnence = action.speakersMsgOutput.response;
 
-        motorsMsg.setnence = action.speakersMsgOutput.response;
-
+        }
       }
-    }
+    }     
 
      motorsPublisher_.publish(motorsMsg);
 
@@ -183,46 +305,81 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
 
 }
 
-void robotManagerRos::makeRememberMeAction(const Action& action){
+void robotManagerRos::makeRememberMeAction(string query){
 
-     ///vision part
-    toi_bot_vision::visionMsgCommand m;
-    m.visionStateCommand = visionState::memorization;
-    m.personName = action.visionMsgOutput.nameToRemember;
-    visionPublisher_.publish(m);
+    ///remember 
+    toi_bot_vision::visionMsgFeatures m;
+    m.feature =query;
+    visionFeaturePublisher_.publish(m);
 
+    
     ros::spinOnce();
     loop_rate_.sleep();
 
 }
 
-void robotManagerRos::makeEmotionDetectionMeAction(const Action& action){
+void robotManagerRos::makeEmotionDetectionMeAction(){
 
-    ///vision part
-    toi_bot_vision::visionMsgCommand m;
-    m.visionStateCommand = visionState::emotionRecognition;
-    m.personName = "";
-    visionPublisher_.publish(m);
+    ///emotion
+    toi_bot_vision::visionMsgFeatures m;
+    m.feature ="emotion";
+    visionFeaturePublisher_.publish(m);
 
+    
     ros::spinOnce();
     loop_rate_.sleep();
 
 }
 
-void robotManagerRos::takeAPhotoAction(const Action& action){
+void robotManagerRos::makeRecognitionAction(){
 
-    ///vision part
-    toi_bot_vision::visionMsgCommand visionMsg;
-    visionMsg.visionStateCommand = takePhoto;
-    visionMsg.personName = "unknown";
-    visionPublisher_.publish(visionMsg);
+    toi_bot_vision::visionMsgFeatures m;
+    m.feature ="recognition";
+    visionFeaturePublisher_.publish(m);
 
-   
-
-
+    
+    ros::spinOnce();
+    loop_rate_.sleep();
 
 }
 
+void robotManagerRos::makeObjectsRecognitionAction(){
+
+    toi_bot_vision::visionMsgFeatures m;
+    m.feature ="objects";
+    visionFeaturePublisher_.publish(m);
+
+    
+    ros::spinOnce();
+    loop_rate_.sleep();
+
+}
+
+void robotManagerRos::makecCleaningFacesDatabaseAction(){
+
+    toi_bot_vision::visionMsgFeatures m;
+    m.feature ="remove database";
+    visionFeaturePublisher_.publish(m);
+
+    
+    ros::spinOnce();
+    loop_rate_.sleep();
+
+}
+
+void robotManagerRos::makeTakeAPhotoAction(){
+
+
+    toi_bot_vision::visionMsgFeatures m;
+    m.feature = "take photo";
+    visionFeaturePublisher_.publish(m);
+
+    
+    ros::spinOnce();
+    loop_rate_.sleep();
+
+
+}
 
 
 robotManagerRos::robotManagerRos(){
@@ -238,39 +395,15 @@ robotManagerRos::robotManagerRos(){
       Action action = takeAction();
 
       switch (action.actionState) {
+       
+        case Tracking_and_Conversation:
+            makeTrackingAndConversationAction(action);
 
-        // switch through states (action.actionState)
-        // if state found, run appropriate function and give it 
-        // the object (with it's proerties) as defined above in the takeAction() function. 
-
-
-          case Tracking:
-
-             makeTrackingAction(action);
-             break;
-
-          case Tracking_and_Conversation:
-              makeTrackingAndConversationAction(action);
-
-             break;
-           case Take_a_photo:
-              takeAPhotoAction(action);
-
-             break;
-
-         case RememberMe:
-
-            makeRememberMeAction(action);
             break;
-
-         case EmotionDetection:
-
-            makeEmotionDetectionMeAction(action);
-            break;
-
+        
         default:
-            makeTrackingAction(action);
-            break;
+          makeTrackingAndConversationAction(action);
+          break;
 
       }
 

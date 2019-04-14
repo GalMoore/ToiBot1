@@ -60,8 +60,8 @@ def head_tracking_move():
 
     if  detlatY == 100000 or abs(detlatY) < threshold:
         #print('dont move')
-        ohbot.move(0,5,1)
-        currentStateY = 5
+        ohbot.move(0,8,1)
+        currentStateY = 8
         ohbot.wait(waiting)
     elif  detlatY > threshold :
         currentStateY = currentStateY + 1
@@ -83,8 +83,12 @@ def head_tracking_move():
 def main(argv):
     ohbot.wait(0.5)
     ohbot.reset()
-    ohbot.move(0,5,1)
-    ohbot.move(1,5,1)
+    
+    ohbot.move(0,8,1) # y  defualt look up 
+    
+    ohbot.move(1,5,1) # 
+    
+
     ohbot.move(2,5,1)
     ohbot.move(3,9,1)
     ohbot.move(4,5,1)
