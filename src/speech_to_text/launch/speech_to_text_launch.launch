@@ -1,6 +1,0 @@
-<launch>
-
-	<node pkg="speech_to_text" type="speech_to_text.py" name="speech_to_text_node" />
-	<node pkg="speech_to_text" type="get_Strings_node.py" name="get_Strings_node" />
-
-</launch>

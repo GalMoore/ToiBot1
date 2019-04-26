@@ -1,5 +1,0 @@
-<launch>
-
-	<node pkg="robot_manager" type="robot_manager" name="robot_manager_node" />
-
-</launch>
