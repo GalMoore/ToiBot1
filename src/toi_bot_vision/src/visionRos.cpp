@@ -1,4 +1,3 @@
-
 #include "/home/intel/toibot_ws/src/ToiBot1/src/toi_bot_vision/include/toi_bot_vision/visionRos.h"
 
 
@@ -99,8 +98,8 @@ void visionRos::visionCallbackFeature(const toi_bot_vision::visionMsgFeatures& m
 
     }
     /// tkake a photo
-    else if ( msg.feature.find("take photo") != string::npos &&
-         lastStateWasPhoto == false ){
+    else if ( msg.feature.find("take photo") != string::npos 
+         && lastStateWasPhoto == false ){
       
         personManager_.takePhoto(state_,frame);
 
@@ -184,4 +183,3 @@ visionRos::visionRos(){
 
 
 }
-

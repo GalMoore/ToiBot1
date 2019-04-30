@@ -184,17 +184,16 @@ void robotManagerRos::takeActionOfVisionFeaturesSim(){
         lastCommandWasCleaningFacesDatabase = false;
     } 
 
-    if ( (voiceInput_.query.find("take a") != string::npos) || 
-          (voiceInput_.query.find("photo") != string::npos) ||
-           (voiceInput_.query.find("picture") != string::npos) ){
+    if ( lastCommandWasTakeAPhoto == false && (voiceInput_.query.find("take a photo") != string::npos) || 
+          (voiceInput_.query.find("take a picture") != string::npos)  ){
           
           makeTakeAPhotoAction();
           lastCommandWasTakeAPhoto = true; 
           canTalkByDialogFlow = false;          
     }
 
-    if( !(voiceInput_.query.find("smile") != string::npos) 
-        ){
+    if( !(voiceInput_.query.find("take a photo") != string::npos || 
+         voiceInput_.query.find("take a picture") != string::npos) ){
         lastCommandWasTakeAPhoto = false;
     }
 
@@ -205,38 +204,8 @@ Action robotManagerRos::takeAction(){
 
     takeActionOfVisionFeaturesSim();   
 
-        
-    /// take a photo
-    if ( (voiceInput_.query.find("take a") != string::npos) || 
-          (voiceInput_.query.find("photo") != string::npos) ||
-           (voiceInput_.query.find("picture") != string::npos) ){
-          cout<<" want to take a pictures"<<endl;
-          Action action;
-          action.actionState = Take_a_photo;
-          action.visionMsgOutput.visionStateOutput = takePhoto;
-
-          
-          action.speakersMsgOutput.response = voiceInput_.response;
-          action.speakersMsgOutput.query = voiceInput_.query;
-
-          return action;
-
-    } else{
-        Action action;
-        action.actionState = Tracking_and_Conversation;
-
-        action.visionMsgOutput.visionStateOutput = tracking;
-
-        /// speakers    
-        action.speakersMsgOutput.response = voiceInput_.response;
-        action.speakersMsgOutput.query = voiceInput_.query;
-
-
-        return action;
-
-
-    }
-         /// tracking and conversation
+   
+    /// tracking and conversation
 
     Action action;
     action.actionState = Tracking_and_Conversation;
@@ -288,7 +257,7 @@ void robotManagerRos::makeTrackingAndConversationAction(const Action& action){
         // and the query heard from user is new (not same as last query)
         if( action.speakersMsgOutput.query!= lastStringQueryPublished_){
           // publish the response from dialogflow to speakers to be spoken! 
-          speakersPublisher_.publish(speakersMsg);
+          //speakersPublisher_.publish(speakersMsg);
           lastStringQueryPublished_= action.speakersMsgOutput.query;
 
           motorsMsg.setnence = action.speakersMsgOutput.response;

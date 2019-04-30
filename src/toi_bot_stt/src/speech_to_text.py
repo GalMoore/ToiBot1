@@ -23,9 +23,9 @@ message = speechTT()
 pub =rospy.Publisher('/stt_topic', speechTT, queue_size=1)
 FORMAT=pyaudio.paInt16
 CHANNELS=1
-RATE=16000 # takes a few hundread samples per second
+RATE=16000 # takes a few hundread samples per second 
 CHUNK=1024
-minimum_tresh_to_trigger_ears=9300 # MAKE ASURE INPUT IS THE WEBACAM AND SET TO FULL
+minimum_tresh_to_trigger_ears=26000 # MAKE ASURE INPUT IS THE WEBACAM AND SET TO FULL
 FILE_NAME= myHome + '/toibot_ws/src/ToiBot1/src/toi_bot_stt/speech_wavs/filename.wav'
 audio=pyaudio.PyAudio() #instantiate the pyaudio
 frames=[] #starting recording into this array
@@ -81,14 +81,15 @@ def detect_and_record():
     del frames[:]
 
     while(True):
-        print("len(frames): " + str(len(frames)))
         data=stream.read(CHUNK)
         data_chunk=array('h',data) #data_chunk is an array of 2048 numbers
         vol=max(data_chunk)
+        print("len(frames): " + str(len(frames)) + "vol "+ str(vol))
+
 
         # Has not reached first threshold yet
         if(vol<minimum_tresh_to_trigger_ears and has_reached_first_threshold==False):
-            # print("not recording yet - less than vol minimum_tresh_to_trigger_ears!")
+            print("not recording yet - less than vol minimum_tresh_to_trigger_ears!")
             pass
         
         # reached threshold for the first time
@@ -112,6 +113,7 @@ def detect_and_record():
             i = 0 
 
         i=i+1
+
 def tell_user_acknowledged():
 
     command = 'python3 /home/intel/toibot_ws/src/ToiBot1/src/motors/src/move_eyes_script.py'
@@ -172,7 +174,7 @@ if __name__ == '__main__':
 
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    print("SETTING UP SPEECH TO TEXT CHECK OF MIC INPUT CONFIG")
+    print("SETTING UP SPEECH TO TEXT CHECK MIC INPUT CONFIG")
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     while(True):
@@ -185,7 +187,7 @@ if __name__ == '__main__':
         else:
             detect_and_record()
             start = time.time()
-            tell_user_acknowledged()
+            tell_user_acknowledged() # runs script to move robot eyes - so we know it heard something
             send_Wav_to_google_get_response_txt_file_and_publish()
             # time.sleep()
             end = time.time()
@@ -194,5 +196,5 @@ if __name__ == '__main__':
             # publish that robot is speaking now
 
             # print("start 9 second sleep")
-            time.sleep(3)
+            # time.sleep(2)
             # print("end 9 second sleep")
