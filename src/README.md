@@ -1,5 +1,4 @@
-# toibot2
-This is a first attempt at creating the readme file for the toibot projec. 
+# toibot1 (for NUC w/ Celeron)
 
 The project is in ROS but it calls a few functions that are called within virtual environments. 
 To build the virtualenv:
