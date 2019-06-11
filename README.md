@@ -1,6 +1,3 @@
-![Screenshot](toilab_smaller.png)
-
-
 # toibot1 (for NUC w/ Celeron)
 
 The project is in ROS but it calls a few functions that are called within virtual environments. 
@@ -34,5 +31,6 @@ Google credentials
 
 
 ### Toibot1 was supported by the awesome people at toilab
+![Screenshot](toilab_smaller.png)
 
 
